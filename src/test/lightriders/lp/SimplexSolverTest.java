@@ -15,12 +15,12 @@ class SimplexSolverTest {
 	private SimplexSolver solver;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		solver = new SimplexSolver();
 	}
 
 	@Test
-	public void testSolve1() {
+	void testSolve1() {
 		// Problem taken from https://www.youtube.com/watch?v=yL7JByLlfrw.
 		double[] c = new double[] { 7, 8, 10, 0, 0 };
 		double[] b = new double[] { 1000, 800 };
@@ -36,7 +36,7 @@ class SimplexSolverTest {
 	}
 
 	@Test
-	public void testSolve2() {
+	void testSolve2() {
 		// Problem taken from https://en.wikipedia.org/wiki/Simplex_algorithm.
 		double[] c = new double[] { 2, 3, 4, 0, 0 };
 		double[] b = new double[] { 10, 15 };
@@ -54,7 +54,7 @@ class SimplexSolverTest {
 	}
 
 	@Test
-	public void testSolve3() {
+	void testSolve3() {
 		// Problem taken from http://www.fuhuthu.com/CPSC420S2018/ps6.pdf.
 		double[] c = new double[] { 1, 1, 0, 0 };
 		double[] b = new double[] { 3, 5 };

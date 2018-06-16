@@ -2,31 +2,25 @@ package lightriders.lp;
 
 import java.util.Arrays;
 
-public class ZeroSumNashEquilibriumSolver {
+import lightriders.equilibrium.INashEquilibriumSolver;
+
+public class ZeroSumNashEquilibriumSolver implements INashEquilibriumSolver {
 
 	private final SimplexSolver simplexSolver = new SimplexSolver();
 
-	/**
-	 * Calculates the Nash equilibrium value of a zero sum payoff matrix.
-	 * 
-	 * @param matrix
-	 *            A payoff matrix for a zero sum game
-	 * @return The Nash equilibrium payoff
+	/* (non-Javadoc)
+	 * @see lightriders.lp.INashEquilibriumSolver#findNashEquilibriumValue(double[][])
 	 */
+	@Override
 	public double findNashEquilibriumValue(double[][] matrix) {
 		double[] variableValues = solveAssociatedLP(matrix);
 		return variableValues[0] - variableValues[1];
 	}
 
-	/**
-	 * Calculates a Nash equilibrium strategy in a zero sum game.
-	 * 
-	 * @param matrix
-	 *            A row player payoff matrix for a zero sum game indexed in the form
-	 *            [row][column]
-	 * @return An array of probabilities corresponding to each of the row player's
-	 *         actions
+	/* (non-Javadoc)
+	 * @see lightriders.lp.INashEquilibriumSolver#findNashEquilibriumStrategy(double[][])
 	 */
+	@Override
 	public double[] findNashEquilibriumStrategy(double[][] matrix) {
 		double[] variableValues = solveAssociatedLP(matrix);
 		int numRows = matrix.length;
@@ -59,7 +53,7 @@ public class ZeroSumNashEquilibriumSolver {
 		}
 		for (int row = 0; row < numRows; row++) {
 			for (int column = 0; column < numColumns; column++) {
-				a[column][2 + row] = matrix[row][column];
+				a[column][2 + row] = -matrix[row][column];
 			}
 		}
 		return simplexSolver.findSolution(c, a, b);
