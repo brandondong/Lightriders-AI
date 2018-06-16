@@ -1,5 +1,7 @@
 package lightriders.lp;
 
+import java.util.Arrays;
+
 public class ZeroSumNashEquilibriumSolver {
 
 	private final SimplexSolver simplexSolver = new SimplexSolver();
@@ -12,7 +14,8 @@ public class ZeroSumNashEquilibriumSolver {
 	 * @return The Nash equilibrium payoff
 	 */
 	public double findNashEquilibriumValue(double[][] matrix) {
-		return solveAssociatedLP(matrix).objectiveValue();
+		double[] variableValues = solveAssociatedLP(matrix);
+		return variableValues[0] - variableValues[1];
 	}
 
 	/**
@@ -25,10 +28,13 @@ public class ZeroSumNashEquilibriumSolver {
 	 *         actions
 	 */
 	public double[] findNashEquilibriumStrategy(double[][] matrix) {
-		return solveAssociatedLP(matrix).variableValues();
+		double[] variableValues = solveAssociatedLP(matrix);
+		int numRows = matrix.length;
+		return Arrays.copyOfRange(variableValues, 2, 2 + numRows);
 	}
 
-	private LPResult solveAssociatedLP(double[][] matrix) {
+	private double[] solveAssociatedLP(double[][] matrix) {
+		// LP explanation here: http://www.fuhuthu.com/CPSC420S2018/lp.pdf.
 		int numRows = matrix.length;
 		int numColumns = matrix[0].length;
 		int numConstraints = numColumns + 1;
