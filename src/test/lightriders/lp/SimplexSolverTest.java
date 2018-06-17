@@ -27,7 +27,8 @@ class SimplexSolverTest {
 		double[] c = new double[] { 7, 8, 10, 0, 0 };
 		double[] b = new double[] { 1000, 800 };
 		double[][] a = new double[][] { new double[] { 2, 3, 2, 1, 0 }, new double[] { 1, 1, 2, 0, 1 } };
-		double[] variableValues = solver.findSolution(c, a, b);
+		int[] basicVariablesIndex = new int[] { 3, 4 };
+		double[] variableValues = solver.findSolution(c, a, b, basicVariablesIndex);
 		validateVariables(variableValues, 5);
 		double x1 = variableValues[0];
 		double x2 = variableValues[1];
@@ -43,7 +44,8 @@ class SimplexSolverTest {
 		double[] c = new double[] { 2, 3, 4, 0, 0 };
 		double[] b = new double[] { 10, 15 };
 		double[][] a = new double[][] { new double[] { 3, 2, 1, 1, 0 }, new double[] { 2, 5, 3, 0, 1 } };
-		double[] variableValues = solver.findSolution(c, a, b);
+		int[] basicVariablesIndex = new int[] { 3, 4 };
+		double[] variableValues = solver.findSolution(c, a, b, basicVariablesIndex);
 		validateVariables(variableValues, 5);
 		double x1 = variableValues[0];
 		double x2 = variableValues[1];
@@ -61,10 +63,25 @@ class SimplexSolverTest {
 		double[] c = new double[] { 1, 1, 0, 0 };
 		double[] b = new double[] { 3, 5 };
 		double[][] a = new double[][] { new double[] { 2, 1, 1, 0 }, new double[] { 1, 3, 0, 1 } };
-		double[] variableValues = solver.findSolution(c, a, b);
+		int[] basicVariablesIndex = new int[] { 2, 3 };
+		double[] variableValues = solver.findSolution(c, a, b, basicVariablesIndex);
 		validateVariables(variableValues, 4);
 		double x = variableValues[0];
 		double y = variableValues[1];
+		assertEquals(0.8, x, TOL);
+		assertEquals(1.4, y, TOL);
+	}
+
+	@Test
+	void testSolve3DifferentInitialBasicIndexes() {
+		double[] c = new double[] { 0, 0, 1, 1 };
+		double[] b = new double[] { 3, 5 };
+		double[][] a = new double[][] { new double[] { 0, 1, 2, 1, }, new double[] { 1, 0, 1, 3 } };
+		int[] basicVariablesIndex = new int[] { 1, 0 };
+		double[] variableValues = solver.findSolution(c, a, b, basicVariablesIndex);
+		validateVariables(variableValues, 4);
+		double x = variableValues[2];
+		double y = variableValues[3];
 		assertEquals(0.8, x, TOL);
 		assertEquals(1.4, y, TOL);
 	}
@@ -77,7 +94,8 @@ class SimplexSolverTest {
 		double[] b = new double[] { 0, 0 };
 		double[][] a = new double[][] { new double[] { 0.4, 0.2, -1.4, -0.2, 1, 0 },
 				new double[] { -7.8, -1.4, 7.8, 0.4, 0, 1 } };
-		assertThrows(RuntimeException.class, () -> solver.findSolution(c, a, b));
+		int[] basicVariablesIndex = new int[] { 4, 5 };
+		assertThrows(RuntimeException.class, () -> solver.findSolution(c, a, b, basicVariablesIndex));
 	}
 
 	@Test
@@ -87,7 +105,8 @@ class SimplexSolverTest {
 		double[] b = new double[] { 0, 10, 15 };
 		double[][] a = new double[][] { new double[] { 2, 3, 4, 1, 0, 0 }, new double[] { 3, 2, 1, 0, 1, 0 },
 				new double[] { 2, 5, 3, 0, 0, 1 } };
-		solver.performSimplexPhase1(c, a, b);
+		int[] basicVariablesIndex = new int[] { 3, 4, 5 };
+		solver.performSimplexPhase1(c, a, b, basicVariablesIndex);
 		assertArrayEquals(new double[] { 0, 0, 0, 0, 1, 1 }, c, TOL);
 		assertEquals(1, a[0][3], TOL);
 		assertEquals(0, a[1][3], TOL);

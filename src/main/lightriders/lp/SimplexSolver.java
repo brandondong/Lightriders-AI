@@ -12,16 +12,18 @@ class SimplexSolver {
 	 * @param c
 	 *            Constants of the objective function in standard form
 	 * @param a
-	 *            Constants of constraint matrix in canonical tableau form with the
-	 *            identity matrix on the right and indexed by [constraint][variable]
+	 *            Constants of constraint matrix in canonical tableau form indexed
+	 *            by [constraint][variable]
 	 * @param b
 	 *            Constants of the RHS of the constraints in standard form
+	 * @param basicVariablesIndex
+	 *            The basic variable indexes ordered by row
 	 * @return The optimal solution
 	 * @throws RuntimeException
 	 *             If the objective is unbounded
 	 */
-	public double[] findSolution(double[] c, double[][] a, double[] b) {
-		return performSimplex(c, a, b, false);
+	public double[] findSolution(double[] c, double[][] a, double[] b, int[] basicVariablesIndex) {
+		return performSimplex(c, a, b, basicVariablesIndex, false);
 	}
 
 	/**
@@ -30,27 +32,24 @@ class SimplexSolver {
 	 * @param c
 	 *            Constants of the objective function in standard form
 	 * @param a
-	 *            Constants of constraint matrix in canonical tableau form with the
-	 *            identity matrix on the right and indexed by [constraint][variable]
+	 *            Constants of constraint matrix in canonical tableau form indexed
+	 *            by [constraint][variable]
 	 * @param b
 	 *            Constants of the RHS of the constraints in standard form
+	 * @param basicVariablesIndex
+	 *            The basic variable indexes ordered by row
 	 * @throws RuntimeException
 	 *             If the objective is unbounded
 	 */
-	public void performSimplexPhase1(double[] c, double[][] a, double[] b) {
-		performSimplex(c, a, b, true);
+	public void performSimplexPhase1(double[] c, double[][] a, double[] b, int[] basicVariablesIndex) {
+		performSimplex(c, a, b, basicVariablesIndex, true);
 	}
 
-	private double[] performSimplex(double[] c, double[][] a, double[] b, boolean isPhase1) {
+	private double[] performSimplex(double[] c, double[][] a, double[] b, int[] basicVariablesIndex, boolean isPhase1) {
 		// Algorithm detailed here: https://www.youtube.com/watch?v=yL7JByLlfrw.
 		// Bland's rule to avoid cycles.
 		int numVariables = c.length;
 		int numConstraints = b.length;
-		int[] basicVariablesIndex = new int[numConstraints];
-		int startingSlackIndex = numVariables - numConstraints;
-		for (int i = 0; i < numConstraints; i++) {
-			basicVariablesIndex[i] = startingSlackIndex + i;
-		}
 		for (int i = 0; i < numVariables; i++) {
 			c[i] *= -1;
 		}
@@ -141,6 +140,8 @@ class SimplexSolver {
 		// (reduced) cost.
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] < -TOL) {
+				// We know this is nonbasic as basic columns in our implementation should have a
+				// value of 0.
 				return i;
 			}
 		}
