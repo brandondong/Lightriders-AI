@@ -1,7 +1,9 @@
 package lightriders.lp;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
@@ -37,7 +39,7 @@ class SimplexSolverTest {
 
 	@Test
 	void testSolve2() {
-		// Problem taken from https://en.wikipedia.org/wiki/Simplex_algorithm.
+		// Problem taken from https://en.wikipedia.org/wiki/Simplex_algorithm#Example.
 		double[] c = new double[] { 2, 3, 4, 0, 0 };
 		double[] b = new double[] { 10, 15 };
 		double[][] a = new double[][] { new double[] { 3, 2, 1, 1, 0 }, new double[] { 2, 5, 3, 0, 1 } };
@@ -65,7 +67,31 @@ class SimplexSolverTest {
 		double y = variableValues[1];
 		assertEquals(0.8, x, TOL);
 		assertEquals(1.4, y, TOL);
+	}
 
+	@Test
+	void testSolvePossibleCycle1() {
+		// Problem taken from http://www.maths.ed.ac.uk/hall/MS-96/MS96010.pdf.
+		// Unbounded objective function.
+		double[] c = new double[] { 2.3, 2.15, -13.55, -0.4, 0, 0 };
+		double[] b = new double[] { 0, 0 };
+		double[][] a = new double[][] { new double[] { 0.4, 0.2, -1.4, -0.2, 1, 0 },
+				new double[] { -7.8, -1.4, 7.8, 0.4, 0, 1 } };
+		assertThrows(RuntimeException.class, () -> solver.findSolution(c, a, b));
+	}
+
+	@Test
+	void testPhase1() {
+		// Problem taken from https://en.wikipedia.org/wiki/Simplex_algorithm#Example_2.
+		double[] c = new double[] { 5, 7, 4, 0, 0, 0 };
+		double[] b = new double[] { 0, 10, 15 };
+		double[][] a = new double[][] { new double[] { 2, 3, 4, 1, 0, 0 }, new double[] { 3, 2, 1, 0, 1, 0 },
+				new double[] { 2, 5, 3, 0, 0, 1 } };
+		solver.performSimplexPhase1(c, a, b);
+		assertArrayEquals(new double[] { 0, 0, 0, 0, 1, 1 }, c, TOL);
+		assertEquals(1, a[0][3], TOL);
+		assertEquals(0, a[1][3], TOL);
+		assertEquals(0, a[2][3], TOL);
 	}
 
 	private void validateVariables(double[] variableValues, int numVariables) {
