@@ -20,17 +20,33 @@ class ZeroSumNashEquilibriumSolverTest {
 	}
 
 	@Test
-	void testMatchingPennies() {
-		double[][] matrix = new double[][] { new double[] { 1, -1 }, new double[] { -1, 1 } };
-		assertEquals(0, solver.findNashEquilibriumValue(matrix), TOL);
-		assertArrayEquals(new double[] { 0.5, 0.5 }, solver.findNashEquilibriumStrategy(matrix), TOL);
+	void testBaseCase() {
+		double[][] matrix = new double[][] { new double[] { 1 } };
+		assertEquilibrium(matrix, 1, new double[] { 1 });
 	}
 
 	@Test
-	void testBaseCase() {
-		double[][] matrix = new double[][] { new double[] { 1 } };
-		assertEquals(1, solver.findNashEquilibriumValue(matrix), TOL);
-		assertArrayEquals(new double[] { 1 }, solver.findNashEquilibriumStrategy(matrix), TOL);
+	void testMatchingPennies() {
+		double[][] matrix = new double[][] { new double[] { 1, -1 }, new double[] { -1, 1 } };
+		assertEquilibrium(matrix, 0, new double[] { 0.5, 0.5 });
+	}
+
+	@Test
+	void testRockPaperScissors() {
+		double[][] matrix = new double[][] { new double[] { 0, -1, 1 }, new double[] { 1, 0, -1 },
+				new double[] { -1, 1, 0 } };
+		assertEquilibrium(matrix, 0, new double[] { 1. / 3, 1. / 3, 1. / 3 });
+	}
+
+	@Test
+	void testPureStrategy() {
+		double[][] matrix = new double[][] { new double[] { 0, -1 }, new double[] { -2, -3 } };
+		assertEquilibrium(matrix, -1, new double[] { 1, 0 });
+	}
+
+	private void assertEquilibrium(double[][] matrix, int equilibriumValue, double[] probabilities) {
+		assertEquals(equilibriumValue, solver.findNashEquilibriumValue(matrix), TOL);
+		assertArrayEquals(probabilities, solver.findNashEquilibriumStrategy(matrix), TOL);
 	}
 
 }
