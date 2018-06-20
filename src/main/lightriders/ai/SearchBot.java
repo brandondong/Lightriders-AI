@@ -2,6 +2,7 @@ package lightriders.ai;
 
 import java.util.List;
 
+import lightriders.evaluation.IEvaluator;
 import lightriders.game.Board;
 import lightriders.game.Move;
 import lightriders.random.IRandomStrategy;
@@ -18,10 +19,12 @@ public class SearchBot {
 	 * @param randomStrategy
 	 *            A strategy for choosing moves based on calculated optimal
 	 *            probabilities
+	 * @param evaluator
+	 *            Board evaluation function
 	 */
-	public SearchBot(int depth, IRandomStrategy randomStrategy) {
+	public SearchBot(int depth, IRandomStrategy randomStrategy, IEvaluator evaluator) {
 		this.randomStrategy = randomStrategy;
-		minmax = new SimultaneousMinmax<Board>(depth, this::nextBoards, null);
+		minmax = new SimultaneousMinmax<Board>(depth, this::nextBoards, evaluator::evaluateBoard);
 	}
 
 	/**
@@ -44,12 +47,22 @@ public class SearchBot {
 		if (moves.isEmpty()) {
 			return new Board[][] {};
 		}
-		List<Move> opponentMoves = board.possibleMovesFor(player.opponent());
+		Player opponent = player.opponent();
+		List<Move> opponentMoves = board.possibleMovesFor(opponent);
 		if (opponentMoves.isEmpty()) {
 			return new Board[][] {};
 		}
 		Board[][] nextBoards = new Board[moves.size()][opponentMoves.size()];
-		// TODO
+		int row = 0;
+		for (Move move : moves) {
+			Board next = board.makeMove(move, player);
+			int column = 0;
+			for (Move opponentMove : opponentMoves) {
+				nextBoards[row][column] = next.makeMove(opponentMove, opponent);
+				column++;
+			}
+			row++;
+		}
 		return nextBoards;
 	}
 
