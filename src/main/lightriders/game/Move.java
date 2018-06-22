@@ -8,6 +8,6 @@ public enum Move {
 	 */
 	@Override
 	public String toString() {
-		return null;
+		return super.toString().toLowerCase();
 	}
 }

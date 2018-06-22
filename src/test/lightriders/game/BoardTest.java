@@ -14,22 +14,22 @@ class BoardTest {
 	@Test
 	void testNoMovesAvailable() {
 		Board board = Board.start(2, 1, 0, 0, 1, 0);
+		assertTrue(board.possibleMovesFor(Player.ZERO).isEmpty());
 		assertTrue(board.possibleMovesFor(Player.ONE).isEmpty());
-		assertTrue(board.possibleMovesFor(Player.TWO).isEmpty());
 	}
 
 	@Test
 	void testOnlyMovesAvailableForP1() {
 		Board board = Board.start(3, 1, 1, 0, 2, 0);
-		assertEquals(Collections.singletonList(Move.LEFT), board.possibleMovesFor(Player.ONE));
-		assertTrue(board.possibleMovesFor(Player.TWO).isEmpty());
+		assertEquals(Collections.singletonList(Move.LEFT), board.possibleMovesFor(Player.ZERO));
+		assertTrue(board.possibleMovesFor(Player.ONE).isEmpty());
 	}
 
 	@Test
 	void testNoMovesAvailableAfterMoving() {
-		Board board = Board.start(3, 1, 1, 0, 2, 0).makeMove(Move.LEFT, Player.ONE);
+		Board board = Board.start(3, 1, 1, 0, 2, 0).makeMove(Move.LEFT, Player.ZERO);
+		assertTrue(board.possibleMovesFor(Player.ZERO).isEmpty());
 		assertTrue(board.possibleMovesFor(Player.ONE).isEmpty());
-		assertTrue(board.possibleMovesFor(Player.TWO).isEmpty());
 	}
 
 }

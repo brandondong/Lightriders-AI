@@ -1,15 +1,19 @@
 package lightriders.ai;
 
 public enum Player {
-	ONE, TWO;
+	ZERO, ONE;
 
 	public Player opponent() {
 		switch (this) {
-		case ONE:
-			return TWO;
-		case TWO:
+		case ZERO:
 			return ONE;
+		case ONE:
+			return ZERO;
 		}
 		throw new RuntimeException();
+	}
+
+	public static Player parseFromEngine(String value) {
+		return value.equals("0") ? ZERO : ONE;
 	}
 }

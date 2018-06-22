@@ -9,29 +9,19 @@ public class Board {
 
 	private final boolean[][] isFilledGrid;
 
+	private final int p0x;
+
+	private final int p0y;
+
 	private final int p1x;
 
 	private final int p1y;
 
-	private final int p2x;
-
-	private final int p2y;
-
-	private Board(int width, int height, int p1x, int p1y, int p2x, int p2y) {
+	private Board(boolean[][] isFilledGrid, int p0x, int p0y, int p1x, int p1y) {
+		this.p0x = p0x;
+		this.p0y = p0y;
 		this.p1x = p1x;
 		this.p1y = p1y;
-		this.p2x = p2x;
-		this.p2y = p2y;
-		isFilledGrid = new boolean[width][height];
-		isFilledGrid[p1x][p1y] = true;
-		isFilledGrid[p2x][p2y] = true;
-	}
-
-	private Board(boolean[][] isFilledGrid, int p1x, int p1y, int p2x, int p2y) {
-		this.p1x = p1x;
-		this.p1y = p1y;
-		this.p2x = p2x;
-		this.p2y = p2y;
 		this.isFilledGrid = isFilledGrid;
 	}
 
@@ -45,12 +35,12 @@ public class Board {
 	public List<Move> possibleMovesFor(Player player) {
 		int x;
 		int y;
-		if (player == Player.ONE) {
+		if (player == Player.ZERO) {
+			x = p0x;
+			y = p0y;
+		} else {
 			x = p1x;
 			y = p1y;
-		} else {
-			x = p2x;
-			y = p2y;
 		}
 		List<Move> moves = new ArrayList<>(3);
 		if (y >= 1 && !isFilledGrid[x][y - 1]) {
@@ -101,16 +91,16 @@ public class Board {
 			dx = 1;
 			dy = 0;
 		}
-		if (player == Player.ONE) {
-			int newp1x = p1x + dx;
-			int newp1y = p1y + dy;
+		if (player == Player.ZERO) {
+			int newp1x = p0x + dx;
+			int newp1y = p0y + dy;
 			isFilledCopy[newp1x][newp1y] = true;
-			return new Board(isFilledCopy, newp1x, newp1y, p2x, p2y);
+			return new Board(isFilledCopy, newp1x, newp1y, p1x, p1y);
 		} else {
-			int newp2x = p2x + dx;
-			int newp2y = p2y + dy;
+			int newp2x = p1x + dx;
+			int newp2y = p1y + dy;
 			isFilledCopy[newp2x][newp2y] = true;
-			return new Board(isFilledCopy, p1x, p1y, newp2x, newp2y);
+			return new Board(isFilledCopy, p0x, p0y, newp2x, newp2y);
 		}
 	}
 
@@ -129,18 +119,58 @@ public class Board {
 	 *            The board width
 	 * @param height
 	 *            The board height
+	 * @param p0x
+	 *            Player 0's starting x position
+	 * @param p0y
+	 *            Player 0's staring y position
 	 * @param p1x
 	 *            Player 1's starting x position
 	 * @param p1y
-	 *            Player 1's staring y position
-	 * @param p2x
-	 *            Player 2's starting x position
-	 * @param p2y
-	 *            Player 2's starting y position
+	 *            Player 1's starting y position
 	 * @return The new starting board
 	 */
-	public static Board start(int width, int height, int p1x, int p1y, int p2x, int p2y) {
-		return new Board(width, height, p1x, p1y, p2x, p2y);
+	public static Board start(int width, int height, int p0x, int p0y, int p1x, int p1y) {
+		boolean[][] isFilledGrid = new boolean[width][height];
+		isFilledGrid[p0x][p0y] = true;
+		isFilledGrid[p1x][p1y] = true;
+		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
+	}
+
+	/**
+	 * Constructs a new board from the engine input.
+	 * 
+	 * @param width
+	 *            The board width
+	 * @param height
+	 *            The board height
+	 * @param value
+	 *            Engine input
+	 * @return The corresponding board
+	 */
+	public static Board parseFromEngine(int width, int height, String value) {
+		boolean[][] isFilledGrid = new boolean[width][height];
+		String[] cells = value.split(",");
+		int p0x = -1;
+		int p0y = -1;
+		int p1x = -1;
+		int p1y = -1;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				int index = y * width + x;
+				String cell = cells[index];
+				if (cell.equals("0")) {
+					p0x = x;
+					p0y = y;
+				} else if (cell.equals("1")) {
+					p1x = x;
+					p1y = y;
+				}
+				if (!cell.equals(".")) {
+					isFilledGrid[x][y] = true;
+				}
+			}
+		}
+		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
 	}
 
 }
