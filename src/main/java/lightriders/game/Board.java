@@ -104,6 +104,14 @@ public class Board {
 		}
 	}
 
+	public int width() {
+		return isFilledGrid.length;
+	}
+
+	public int height() {
+		return isFilledGrid[0].length;
+	}
+
 	/**
 	 * Formatted in the engine board format.
 	 */
