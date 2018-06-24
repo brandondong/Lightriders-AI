@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -31,6 +32,16 @@ class HumanBotMatch {
 	private static final int STROKE_WIDTH = 4;
 
 	private static final int CELL_SIZE = 33;
+
+	private static final int[] UP_X_POINTS = new int[] { CELL_SIZE / 2, CELL_SIZE / 2 + 6, CELL_SIZE / 2,
+			CELL_SIZE / 2 - 6, CELL_SIZE / 2 };
+
+	private static final int[] UP_Y_POINTS = new int[] { CELL_SIZE / 2 - 6, CELL_SIZE / 2 + 6, CELL_SIZE / 2 + 2,
+			CELL_SIZE / 2 + 6, CELL_SIZE / 2 - 6 };
+
+	private static final int[] DOWN_X_POINTS = Arrays.stream(UP_X_POINTS).map(i -> CELL_SIZE - 1 - i).toArray();
+
+	private static final int[] DOWN_Y_POINTS = Arrays.stream(UP_Y_POINTS).map(i -> CELL_SIZE - 1 - i).toArray();
 
 	private Board currentBoard;
 
@@ -119,8 +130,32 @@ class HumanBotMatch {
 					currentX = nextX;
 					currentY = nextY;
 				}
-				// TODO path('M 10.5 4.5 L 16.5 16.5 L 10.44 12.75 L 4.5 16.5 L 10.5 4.5 Z');
-				g.fillRect(leftX + pX * CELL_SIZE, upY + pY * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+				// TODO rotation.
+				int[] xPoints;
+				int[] yPoints;
+				Move lastMove;
+				if (!pMoves.isEmpty()) {
+					lastMove = pMoves.get(pMoves.size() - 1);
+				} else if (pX <= currentBoard.width() / 2) {
+					lastMove = Move.RIGHT;
+				} else {
+					lastMove = Move.LEFT;
+				}
+				if (lastMove == Move.UP) {
+					xPoints = UP_X_POINTS;
+					yPoints = UP_Y_POINTS;
+				} else if (lastMove == Move.DOWN) {
+					xPoints = DOWN_X_POINTS;
+					yPoints = DOWN_Y_POINTS;
+				} else if (lastMove == Move.LEFT) {
+					xPoints = UP_Y_POINTS;
+					yPoints = UP_X_POINTS;
+				} else {
+					xPoints = DOWN_Y_POINTS;
+					yPoints = DOWN_X_POINTS;
+				}
+				g.drawPolygon(Arrays.stream(xPoints).map(i -> i + pX * CELL_SIZE + leftX).toArray(),
+						Arrays.stream(yPoints).map(i -> i + pY * CELL_SIZE + upY).toArray(), xPoints.length);
 			}
 		};
 		background.addMouseListener(new MouseAdapter() {
