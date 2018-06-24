@@ -104,12 +104,48 @@ public class Board {
 		}
 	}
 
+	/**
+	 * @return The board width
+	 */
 	public int width() {
 		return isFilledGrid.length;
 	}
 
+	/**
+	 * @return The board height
+	 */
 	public int height() {
 		return isFilledGrid[0].length;
+	}
+
+	/**
+	 * @param p
+	 *            The player of interest
+	 * @return The specified player's x position
+	 */
+	public int getX(Player p) {
+		return p == Player.ZERO ? p0x : p1x;
+	}
+
+	/**
+	 * @param p
+	 *            The player of interest
+	 * @return The specified player's y position
+	 */
+	public int getY(Player p) {
+		return p == Player.ZERO ? p0y : p1y;
+	}
+
+	/**
+	 * @param x
+	 *            An x position on the board
+	 * @param y
+	 *            A y position on the board
+	 * @return <code>true</code> if the cell for the given position is filled,
+	 *         <code>false</code> otherwise
+	 */
+	public boolean isFilled(int x, int y) {
+		return isFilledGrid[x][y];
 	}
 
 	/**

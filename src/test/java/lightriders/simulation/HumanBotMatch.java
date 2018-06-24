@@ -1,24 +1,67 @@
 package lightriders.simulation;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Scanner;
+import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import lightriders.ai.Player;
 import lightriders.game.Board;
+import lightriders.game.Move;
 
-public class HumanBotMatch {
+class HumanBotMatch {
 
 	private static final String BACKGROUND_IMG_PATH = "src/test/resources/background.png";
 
+	private static final Color BLUE = new Color(106, 160, 252);
+
+	private static final Color PINK = new Color(228, 25, 249);
+
+	private static final Color GREY = new Color(51, 51, 51);
+
+	private static final int STROKE_WIDTH = 4;
+
 	private static final int CELL_SIZE = 33;
 
-	private final Board currentBoard;
+	private Board currentBoard;
+
+	private final List<Move> p0Moves = new ArrayList<>();
+
+	private final List<Move> p1Moves = new ArrayList<>();
+
+	private final int start0x;
+
+	private final int start0y;
+
+	private final int start1x;
+
+	private final int start1y;
+
+	private final boolean[][] filledCells;
 
 	public HumanBotMatch(Board board) {
 		currentBoard = board;
+		// Keep track of the initially filled cells.
+		start0x = currentBoard.getX(Player.ZERO);
+		start0y = currentBoard.getY(Player.ZERO);
+		start1x = currentBoard.getX(Player.ONE);
+		start1y = currentBoard.getY(Player.ONE);
+		filledCells = new boolean[board.width()][board.height()];
+		for (int x = 0; x < board.width(); x++) {
+			for (int y = 0; y < board.height(); y++) {
+				filledCells[x][y] = board.isFilled(x, y) && !(x == start0x && y == start0y)
+						&& !(x == start1x && y == start1y);
+			}
+		}
 	}
 
 	public void start() {
@@ -31,66 +74,113 @@ public class HumanBotMatch {
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				int centerX = getWidth() / 2;
-				int centerY = getHeight() / 2;
-				int totalWidth = currentBoard.width() * CELL_SIZE;
-				int totalHeight = currentBoard.height() * CELL_SIZE;
-				int leftX = centerX - totalWidth / 2;
-				int upY = centerY - totalHeight / 2;
+				int upY = getGridTopY(this);
+				int leftX = getGridLeftX(this);
+				g.setColor(GREY);
+				// Draw the grid and any filled cells.
 				for (int x = 0; x < currentBoard.width(); x++) {
 					for (int y = 0; y < currentBoard.height(); y++) {
 						g.drawRect(leftX + x * CELL_SIZE, upY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+						if (filledCells[x][y]) {
+							g.fillRect(leftX + x * CELL_SIZE, upY + y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+						}
 					}
 				}
+				// Draw the player paths.
+				int p0x = currentBoard.getX(Player.ZERO);
+				int p0y = currentBoard.getY(Player.ZERO);
+				int p1x = currentBoard.getX(Player.ONE);
+				int p1y = currentBoard.getY(Player.ONE);
+				drawPlayerPath(g, upY, leftX, p0x, p0y, start0x, start0y, p0Moves, BLUE);
+				drawPlayerPath(g, upY, leftX, p1x, p1y, start1x, start1y, p1Moves, PINK);
+			}
+
+			private void drawPlayerPath(Graphics g, int upY, int leftX, int pX, int pY, int startX, int startY,
+					List<Move> pMoves, Color c) {
+				g.setColor(c);
+				((Graphics2D) g).setStroke(new BasicStroke(STROKE_WIDTH));
+				int currentX = startX;
+				int currentY = startY;
+				int halfSize = CELL_SIZE / 2;
+				for (Move m : pMoves) {
+					int nextX = currentX;
+					int nextY = currentY;
+					if (m == Move.UP) {
+						nextY--;
+					} else if (m == Move.DOWN) {
+						nextY++;
+					} else if (m == Move.LEFT) {
+						nextX--;
+					} else {
+						nextX++;
+					}
+					g.drawLine(leftX + currentX * CELL_SIZE + halfSize, upY + currentY * CELL_SIZE + halfSize,
+							leftX + nextX * CELL_SIZE + halfSize, upY + nextY * CELL_SIZE + halfSize);
+					currentX = nextX;
+					currentY = nextY;
+				}
+				// TODO path('M 10.5 4.5 L 16.5 16.5 L 10.44 12.75 L 4.5 16.5 L 10.5 4.5 Z');
+				g.fillRect(leftX + pX * CELL_SIZE, upY + pY * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 			}
 		};
+		background.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int clickX = e.getX();
+				int clickY = e.getY();
+				// TODO check if still processing.
+				int upY = getGridTopY(background);
+				int leftX = getGridLeftX(background);
+				if (clickX < leftX || clickY < upY) {
+					return;
+				}
+				int x = (clickX - leftX) / CELL_SIZE;
+				int y = (clickY - upY) / CELL_SIZE;
+				if (x >= currentBoard.width() || y >= currentBoard.height()) {
+					return;
+				}
+				// Player 0 is the human player.
+				int p0x = currentBoard.getX(Player.ZERO);
+				int p0y = currentBoard.getY(Player.ZERO);
+				Move m;
+				if (x == p0x && y == p0y - 1) {
+					m = Move.UP;
+				} else if (x == p0x && y == p0y + 1) {
+					m = Move.DOWN;
+				} else if (x == p0x - 1 && y == p0y) {
+					m = Move.LEFT;
+				} else if (x == p0x + 1 && y == p0y) {
+					m = Move.RIGHT;
+				} else {
+					return;
+				}
+				if (!currentBoard.possibleMovesFor(Player.ZERO).contains(m)) {
+					return;
+				}
+				currentBoard = currentBoard.makeMove(m, Player.ZERO);
+				// TODO wait for/make bot move.
+				p0Moves.add(m);
+				background.repaint();
+			}
+		});
 		frame.add(background);
 		// Size the frame and show it.
 		frame.pack();
 		frame.setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		try (Scanner s = new Scanner(System.in)) {
-			System.out.print("New game/new custom game/load existing game? (1/2/3): ");
-			int answer = s.nextInt();
-			Board board;
-			if (answer == 1) {
-				int width = 16;
-				int height = 16;
-				System.out.print("Enter player 0 starting x: ");
-				int p0x = s.nextInt();
-				System.out.print("Enter player 0 starting y: ");
-				int p0y = s.nextInt();
-				int p1x = width - 1 - p0x;
-				int p1y = height - 1 - p0y;
-				board = Board.start(width, height, p0x, p0y, p1x, p1y);
-			} else if (answer == 2) {
-				System.out.print("Enter width: ");
-				int width = s.nextInt();
-				System.out.print("Enter height: ");
-				int height = s.nextInt();
-				System.out.print("Enter player 0 starting x: ");
-				int p0x = s.nextInt();
-				System.out.print("Enter player 0 starting y: ");
-				int p0y = s.nextInt();
-				System.out.print("Enter player 1 starting x: ");
-				int p1x = s.nextInt();
-				System.out.print("Enter player 1 starting y: ");
-				int p1y = s.nextInt();
-				board = Board.start(width, height, p0x, p0y, p1x, p1y);
-			} else {
-				System.out.print("Enter width: ");
-				int width = s.nextInt();
-				System.out.print("Enter height: ");
-				int height = s.nextInt();
-				System.out.print("Enter board input: ");
-				String value = s.nextLine();
-				board = Board.parseFromEngine(width, height, value);
-			}
+	private int getGridTopY(JComponent component) {
+		int centerY = component.getHeight() / 2;
+		int totalHeight = currentBoard.height() * CELL_SIZE;
+		int upY = centerY - totalHeight / 2;
+		return upY;
+	}
 
-			new HumanBotMatch(board).start();
-		}
+	private int getGridLeftX(JComponent component) {
+		int centerX = component.getWidth() / 2;
+		int totalWidth = currentBoard.width() * CELL_SIZE;
+		int leftX = centerX - totalWidth / 2;
+		return leftX;
 	}
 
 }
