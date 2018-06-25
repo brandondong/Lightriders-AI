@@ -59,6 +59,8 @@ class HumanBotMatch {
 
 	private final boolean[][] filledCells;
 
+	private BotWorker worker;
+
 	public HumanBotMatch(Board board) {
 		currentBoard = board;
 		// Keep track of the initially filled cells.
@@ -73,6 +75,7 @@ class HumanBotMatch {
 						&& !(x == start1x && y == start1y);
 			}
 		}
+		startBackgroundBotWorker();
 	}
 
 	public void start() {
@@ -130,13 +133,12 @@ class HumanBotMatch {
 					currentX = nextX;
 					currentY = nextY;
 				}
-				// TODO rotation.
 				int[] xPoints;
 				int[] yPoints;
 				Move lastMove;
 				if (!pMoves.isEmpty()) {
 					lastMove = pMoves.get(pMoves.size() - 1);
-				} else if (pX <= currentBoard.width() / 2) {
+				} else if (pX < currentBoard.width() / 2) {
 					lastMove = Move.RIGHT;
 				} else {
 					lastMove = Move.LEFT;
@@ -163,7 +165,6 @@ class HumanBotMatch {
 			public void mouseClicked(MouseEvent e) {
 				int clickX = e.getX();
 				int clickY = e.getY();
-				// TODO check if still processing.
 				int upY = getGridTopY(background);
 				int leftX = getGridLeftX(background);
 				if (clickX < leftX || clickY < upY) {
@@ -192,16 +193,29 @@ class HumanBotMatch {
 				if (!currentBoard.possibleMovesFor(Player.ZERO).contains(m)) {
 					return;
 				}
-				currentBoard = currentBoard.makeMove(m, Player.ZERO);
-				// TODO wait for/make bot move.
-				p0Moves.add(m);
-				background.repaint();
+				// TODO processing image?
+				try {
+					// Block for bot move. Hopefully already processed.
+					Move botMove = worker.get();
+					currentBoard = currentBoard.makeMove(m, Player.ZERO).makeMove(botMove, Player.ONE);
+					p0Moves.add(m);
+					p1Moves.add(botMove);
+					background.repaint();
+					startBackgroundBotWorker();
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		});
 		frame.add(background);
 		// Size the frame and show it.
 		frame.pack();
 		frame.setVisible(true);
+	}
+
+	private void startBackgroundBotWorker() {
+		worker = new BotWorker(currentBoard, Player.ONE);
+		worker.execute();
 	}
 
 	private int getGridTopY(JComponent component) {
