@@ -1,5 +1,6 @@
 package lightriders.ai;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import lightriders.lp.ZeroSumNashEquilibriumSolver;
@@ -46,12 +47,7 @@ class SimultaneousMinmax<T> {
 		T[][] nextPositions = possibleMoves.apply(position, player);
 		int numRows = nextPositions.length;
 		int numColumns = nextPositions[0].length;
-		double[][] payoffMatrix = new double[numRows][numColumns];
-		for (int row = 0; row < numRows; row++) {
-			for (int column = 0; column < numColumns; column++) {
-				payoffMatrix[row][column] = minmax(depth - 1, nextPositions[row][column], player);
-			}
-		}
+		double[][] payoffMatrix = fillPayoffMatrix(depth, player, nextPositions, numRows, numColumns);
 		return solver.findNashEquilibriumStrategy(payoffMatrix);
 	}
 
@@ -67,13 +63,28 @@ class SimultaneousMinmax<T> {
 		}
 		// If there are any rows, there must be columns in the matrix.
 		int numColumns = nextPositions[0].length;
+		double[][] payoffMatrix = fillPayoffMatrix(depth, player, nextPositions, numRows, numColumns);
+		return solver.findNashEquilibriumValue(payoffMatrix);
+	}
+
+	private double[][] fillPayoffMatrix(int depth, Player player, T[][] nextPositions, int numRows, int numColumns) {
+		double[] maxInColumn = new double[numColumns];
+		Arrays.fill(maxInColumn, Double.MIN_VALUE);
+		double[] leastInRow = new double[numRows];
+		Arrays.fill(leastInRow, Double.MAX_VALUE);
+		int[] numEmptyInRow = new int[numRows];
+		Arrays.fill(numEmptyInRow, numColumns);
+		int[] numEmptyInColumn = new int[numColumns];
+		Arrays.fill(numEmptyInColumn, numRows);
+		boolean[][] hasBeenEvaluated = new boolean[numRows][numColumns];
+
 		double[][] payoffMatrix = new double[numRows][numColumns];
 		for (int row = 0; row < numRows; row++) {
 			for (int column = 0; column < numColumns; column++) {
 				payoffMatrix[row][column] = minmax(depth - 1, nextPositions[row][column], player);
 			}
 		}
-		return solver.findNashEquilibriumValue(payoffMatrix);
+		return payoffMatrix;
 	}
 
 }

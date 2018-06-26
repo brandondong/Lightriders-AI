@@ -45,6 +45,8 @@ class HumanBotMatch {
 
 	private Board currentBoard;
 
+	private final Player human;
+
 	private final List<Move> p0Moves = new ArrayList<>();
 
 	private final List<Move> p1Moves = new ArrayList<>();
@@ -61,13 +63,20 @@ class HumanBotMatch {
 
 	private BotWorker worker;
 
-	public HumanBotMatch(Board board) {
+	/**
+	 * @param board
+	 *            The board to play
+	 * @param human
+	 *            The player that the human will control
+	 */
+	public HumanBotMatch(Board board, Player human) {
 		currentBoard = board;
+		this.human = human;
 		// Keep track of the initially filled cells.
-		start0x = currentBoard.getX(Player.ZERO);
-		start0y = currentBoard.getY(Player.ZERO);
-		start1x = currentBoard.getX(Player.ONE);
-		start1y = currentBoard.getY(Player.ONE);
+		start0x = currentBoard.getX(human);
+		start0y = currentBoard.getY(human);
+		start1x = currentBoard.getX(human.opponent());
+		start1y = currentBoard.getY(human.opponent());
 		filledCells = new boolean[board.width()][board.height()];
 		for (int x = 0; x < board.width(); x++) {
 			for (int y = 0; y < board.height(); y++) {
@@ -78,6 +87,9 @@ class HumanBotMatch {
 		startBackgroundBotWorker();
 	}
 
+	/**
+	 * Starts a new instance of the interactive match.
+	 */
 	public void start() {
 		JFrame frame = new JFrame("Light Riders");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,10 +113,10 @@ class HumanBotMatch {
 					}
 				}
 				// Draw the player paths.
-				int p0x = currentBoard.getX(Player.ZERO);
-				int p0y = currentBoard.getY(Player.ZERO);
-				int p1x = currentBoard.getX(Player.ONE);
-				int p1y = currentBoard.getY(Player.ONE);
+				int p0x = currentBoard.getX(human);
+				int p0y = currentBoard.getY(human);
+				int p1x = currentBoard.getX(human.opponent());
+				int p1y = currentBoard.getY(human.opponent());
 				drawPlayerPath(g, upY, leftX, p0x, p0y, start0x, start0y, p0Moves, BLUE);
 				drawPlayerPath(g, upY, leftX, p1x, p1y, start1x, start1y, p1Moves, PINK);
 			}
@@ -175,9 +187,8 @@ class HumanBotMatch {
 				if (x >= currentBoard.width() || y >= currentBoard.height()) {
 					return;
 				}
-				// Player 0 is the human player.
-				int p0x = currentBoard.getX(Player.ZERO);
-				int p0y = currentBoard.getY(Player.ZERO);
+				int p0x = currentBoard.getX(human);
+				int p0y = currentBoard.getY(human);
 				Move m;
 				if (x == p0x && y == p0y - 1) {
 					m = Move.UP;
@@ -190,14 +201,14 @@ class HumanBotMatch {
 				} else {
 					return;
 				}
-				if (!currentBoard.possibleMovesFor(Player.ZERO).contains(m)) {
+				if (!currentBoard.possibleMovesFor(human).contains(m)) {
 					return;
 				}
 				// TODO processing image?
 				try {
 					// Block for bot move. Hopefully already processed.
 					Move botMove = worker.get();
-					currentBoard = currentBoard.makeMove(m, Player.ZERO).makeMove(botMove, Player.ONE);
+					currentBoard = currentBoard.makeMove(m, human).makeMove(botMove, human.opponent());
 					p0Moves.add(m);
 					p1Moves.add(botMove);
 					background.repaint();
@@ -214,7 +225,7 @@ class HumanBotMatch {
 	}
 
 	private void startBackgroundBotWorker() {
-		worker = new BotWorker(currentBoard, Player.ONE);
+		worker = new BotWorker(currentBoard, human.opponent());
 		worker.execute();
 	}
 
