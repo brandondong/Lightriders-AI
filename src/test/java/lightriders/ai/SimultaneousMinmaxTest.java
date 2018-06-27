@@ -32,6 +32,18 @@ class SimultaneousMinmaxTest {
 		assertArrayEquals(new double[] { 1, 0 }, minmax.optimalDecisionProbabilities(1., Player.ZERO), TOL);
 	}
 
+	@Test
+	void testPruneOpportunity() {
+		double root = 3;
+		SimultaneousMinmax<Double> minmax = new SimultaneousMinmax<>(0, (d, p) -> {
+			if (d == root) {
+				return new Double[][] { new Double[] { 0., 1. }, new Double[] { -1., 2. } };
+			}
+			return new Double[][] {};
+		}, identityEvaluation());
+		assertArrayEquals(new double[] { 1, 0 }, minmax.optimalDecisionProbabilities(root, Player.ZERO), TOL);
+	}
+
 	private BiFunction<Double, Player, Double> identityEvaluation() {
 		return (d, p) -> p == Player.ZERO ? d : -1;
 	}
