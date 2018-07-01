@@ -6,7 +6,7 @@ import lightriders.ai.Player;
 import lightriders.game.Board;
 import lightriders.game.Move;
 
-public class TerminalStateEvaluator implements IEvaluator {
+public class TerminalStateEvaluator implements IEvaluator, IRoundsEstimator {
 
 	@Override
 	public double evaluateBoard(Board board, Player player) {
@@ -21,6 +21,11 @@ public class TerminalStateEvaluator implements IEvaluator {
 			return 1;
 		}
 		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public int roundsLeft(Board board, Player player) {
+		throw new RuntimeException();
 	}
 
 }

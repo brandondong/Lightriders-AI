@@ -3,15 +3,20 @@ package lightriders.ai;
 import java.util.List;
 
 import lightriders.evaluation.IEvaluator;
+import lightriders.evaluation.IRoundsEstimator;
 import lightriders.game.Board;
 import lightriders.game.Move;
 import lightriders.random.IRandomStrategy;
 
 public class SearchBot {
 
+	private final int separatedDepth;
+
 	private final SimultaneousMinmax<Board> minmax;
 
 	private final IRandomStrategy randomStrategy;
+
+	private final IRoundsEstimator estimator;
 
 	/**
 	 * @param depth
@@ -22,26 +27,32 @@ public class SearchBot {
 	 * @param evaluator
 	 *            Board evaluation function
 	 */
-	public SearchBot(int depth, IRandomStrategy randomStrategy, IEvaluator evaluator) {
+	public SearchBot(int depth, int separatedDepth, IRandomStrategy randomStrategy, IEvaluator evaluator,
+			IRoundsEstimator estimator) {
+		this.separatedDepth = separatedDepth;
 		this.randomStrategy = randomStrategy;
-		minmax = new SimultaneousMinmax<Board>(depth, this::nextBoards, evaluator::evaluateBoard);
+		this.estimator = estimator;
+		minmax = new SimultaneousMinmax<Board>(depth, this::nextBoardsMatrix, evaluator::evaluateBoard);
 	}
 
 	/**
 	 * Computes the best move for the given board and player.
 	 * 
 	 * @param board
-	 *            The current board
+	 *            The current board where the game is not over
 	 * @param player
 	 *            The player to choose for
 	 * @return The computed best move
 	 */
 	public Move bestMove(Board board, Player player) {
+		List<Move> moves = board.possibleMovesFor(player);
 		if (playersSeparated(board)) {
-
+			TreeHeightSearch<Board> maxRounds = new TreeHeightSearch<>(separatedDepth, b -> nextBoardArray(b, player),
+					b -> estimator.roundsLeft(b, player));
+			int bestIndex = maxRounds.highestSubtree(board);
+			return moves.get(bestIndex);
 		}
 		double[] probabilities = minmax.optimalDecisionProbabilities(board, player);
-		List<Move> moves = board.possibleMovesFor(player);
 		return randomStrategy.chooseMove(moves, probabilities);
 	}
 
@@ -68,7 +79,11 @@ public class SearchBot {
 				|| playersSeparated(board, x, y - 1, targetX, targetY, visited);
 	}
 
-	private Board[][] nextBoards(Board board, Player player) {
+	private Board[] nextBoardArray(Board board, Player player) {
+		return null;
+	}
+
+	private Board[][] nextBoardsMatrix(Board board, Player player) {
 		List<Move> moves = board.possibleMovesFor(player);
 		if (moves.isEmpty()) {
 			return new Board[][] {};

@@ -11,7 +11,8 @@ import lightriders.random.DeterministicMajorityStrategy;
 
 class BotWorker extends SwingWorker<Move, Void> {
 
-	private final SearchBot bot = new SearchBot(0, new DeterministicMajorityStrategy(), new TerminalStateEvaluator());
+	private final SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), new TerminalStateEvaluator(),
+			new TerminalStateEvaluator());
 
 	private final Board board;
 

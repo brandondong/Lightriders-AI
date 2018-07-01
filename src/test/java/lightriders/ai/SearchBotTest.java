@@ -15,21 +15,24 @@ class SearchBotTest {
 
 	@Test
 	void testFirstMove4by4() {
-		SearchBot bot = new SearchBot(0, new DeterministicMajorityStrategy(), new TerminalStateEvaluator());
+		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
+		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
 		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ZERO));
 		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ONE));
 	}
 
 	@Test
 	void testResponseToBadMove4by4() {
-		SearchBot bot = new SearchBot(0, new DeterministicMajorityStrategy(), new TerminalStateEvaluator());
+		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
+		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.RIGHT, Player.ONE);
 		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO));
 	}
 
 	@Test
 	void testResponseToOtherBadMove4by4() {
-		SearchBot bot = new SearchBot(0, new DeterministicMajorityStrategy(), new TerminalStateEvaluator());
+		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
+		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.UP, Player.ONE);
 		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO));
 	}
