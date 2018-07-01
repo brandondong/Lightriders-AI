@@ -37,9 +37,35 @@ public class SearchBot {
 	 * @return The computed best move
 	 */
 	public Move bestMove(Board board, Player player) {
+		if (playersSeparated(board)) {
+
+		}
 		double[] probabilities = minmax.optimalDecisionProbabilities(board, player);
 		List<Move> moves = board.possibleMovesFor(player);
 		return randomStrategy.chooseMove(moves, probabilities);
+	}
+
+	private boolean playersSeparated(Board board) {
+		boolean[][] visited = new boolean[board.width()][board.height()];
+		return playersSeparated(board, board.getX(Player.ZERO), board.getY(Player.ZERO), board.getX(Player.ONE),
+				board.getY(Player.ONE), visited);
+	}
+
+	private boolean playersSeparated(Board board, int x, int y, int targetX, int targetY, boolean[][] visited) {
+		if (visited[x][y]) {
+			return false;
+		}
+		visited[x][y] = true;
+		if (x == targetX && y == targetY) {
+			return true;
+		}
+		if (board.isFilled(x, y) || !board.inBounds(x, y)) {
+			return false;
+		}
+		return playersSeparated(board, x + 1, y, targetX, targetY, visited)
+				|| playersSeparated(board, x - 1, y, targetX, targetY, visited)
+				|| playersSeparated(board, x, y + 1, targetX, targetY, visited)
+				|| playersSeparated(board, x, y - 1, targetX, targetY, visited);
 	}
 
 	private Board[][] nextBoards(Board board, Player player) {

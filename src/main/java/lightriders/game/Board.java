@@ -149,6 +149,18 @@ public class Board {
 	}
 
 	/**
+	 * @param x
+	 *            An x position to check
+	 * @param y
+	 *            A y position to check
+	 * @return <code>true</code> if the given x and y position are within the bounds
+	 *         of the board, <code>false</code> otherwise
+	 */
+	public boolean inBounds(int x, int y) {
+		return x >= 0 && x < width() && y >= 0 && y < height();
+	}
+
+	/**
 	 * Formatted in the engine board format.
 	 */
 	@Override
