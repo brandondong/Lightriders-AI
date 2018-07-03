@@ -1,14 +1,14 @@
 package lightriders.ai;
 
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 
 class TreeHeightSearch<T> {
 
 	private final int depth;
 
-	private final Function<T, T[]> childNodes;
+	private final Function<T, List<T>> childNodes;
 
 	private final Function<T, Integer> evaluation;
 
@@ -20,7 +20,7 @@ class TreeHeightSearch<T> {
 	 * @param evaluation
 	 *            Estimates the height of a given node
 	 */
-	public TreeHeightSearch(int depth, Function<T, T[]> childNodes, Function<T, Integer> evaluation) {
+	public TreeHeightSearch(int depth, Function<T, List<T>> childNodes, Function<T, Integer> evaluation) {
 		this.depth = depth;
 		this.childNodes = childNodes;
 		this.evaluation = evaluation;
@@ -34,11 +34,11 @@ class TreeHeightSearch<T> {
 	 * @return The index of the highest subtree
 	 */
 	public int highestSubtree(T node) {
-		T[] children = childNodes.apply(node);
+		List<T> children = childNodes.apply(node);
 		int maxIndex = -1;
 		int maxHeight = -1;
-		for (int i = 0; i < children.length; i++) {
-			int subtreeHeight = height(depth - 1, children[i]);
+		for (int i = 0; i < children.size(); i++) {
+			int subtreeHeight = height(depth - 1, children.get(i));
 			if (subtreeHeight > maxHeight) {
 				maxHeight = subtreeHeight;
 				maxIndex = i;
@@ -51,8 +51,8 @@ class TreeHeightSearch<T> {
 		if (depth == 0) {
 			return evaluation.apply(node);
 		}
-		T[] children = childNodes.apply(node);
-		return Arrays.stream(children).map(childNode -> 1 + height(depth - 1, childNode)).max(Comparator.naturalOrder())
+		List<T> children = childNodes.apply(node);
+		return children.stream().map(childNode -> 1 + height(depth - 1, childNode)).max(Comparator.naturalOrder())
 				.orElse(0);
 	}
 

@@ -37,4 +37,9 @@ class SearchBotTest {
 		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO));
 	}
 
+	@Test
+	void testUseSeparatedStrategy() {
+		// TODO implement this.
+	}
+
 }

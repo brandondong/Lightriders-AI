@@ -1,6 +1,7 @@
 package lightriders.ai;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lightriders.evaluation.IEvaluator;
 import lightriders.evaluation.IRoundsEstimator;
@@ -79,8 +80,8 @@ public class SearchBot {
 				|| playersSeparated(board, x, y - 1, targetX, targetY, visited);
 	}
 
-	private Board[] nextBoardArray(Board board, Player player) {
-		return null;
+	private List<Board> nextBoardArray(Board board, Player player) {
+		return board.possibleMovesFor(player).stream().map(m -> board.makeMove(m, player)).collect(Collectors.toList());
 	}
 
 	private Board[][] nextBoardsMatrix(Board board, Player player) {
