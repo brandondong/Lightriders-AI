@@ -33,7 +33,7 @@ public class ChokePointRoundsEstimator implements IRoundsEstimator {
 		int x = board.getX(player);
 		int y = board.getY(player);
 		boolean[][] visited = new boolean[board.width()][board.height()];
-		return totalArea(x, y, visited, board, x, y);
+		return totalArea(x, y, visited, board, x, y) - 1;
 	}
 
 	private int totalArea(int x, int y, boolean[][] visited, Board board, int ignoreFilledX, int ignoredFilledY) {
@@ -49,11 +49,11 @@ public class ChokePointRoundsEstimator implements IRoundsEstimator {
 
 	private int area(int x, int y, boolean[][] visited, Board board, List<ChokePoint> chokePoints, int ignoreFilledX,
 			int ignoredFilledY) {
-		if (visited[x][y]) {
+		if (!board.inBounds(x, y) || visited[x][y]) {
 			return 0;
 		}
 		visited[x][y] = true;
-		if ((board.isFilled(x, y) || !board.inBounds(x, y)) && !(x == ignoreFilledX && y == ignoredFilledY)) {
+		if (board.isFilled(x, y) && !(x == ignoreFilledX && y == ignoredFilledY)) {
 			return 0;
 		}
 		int upArea = 0;

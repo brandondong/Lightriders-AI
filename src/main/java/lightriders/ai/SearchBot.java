@@ -64,14 +64,14 @@ public class SearchBot {
 	}
 
 	private boolean playersSeparated(Board board, int x, int y, int targetX, int targetY, boolean[][] visited) {
-		if (visited[x][y]) {
+		if (!board.inBounds(x, y) || visited[x][y]) {
 			return false;
 		}
 		visited[x][y] = true;
 		if (x == targetX && y == targetY) {
 			return true;
 		}
-		if (board.isFilled(x, y) || !board.inBounds(x, y)) {
+		if (board.isFilled(x, y)) {
 			return false;
 		}
 		return playersSeparated(board, x + 1, y, targetX, targetY, visited)
