@@ -19,6 +19,8 @@ public class SearchBot {
 
 	private final IRoundsEstimator estimator;
 
+	private final PlayerSeparationCondition separationCondition = new PlayerSeparationCondition();
+
 	/**
 	 * @param depth
 	 *            The depth to search to or 0 for no limit
@@ -47,7 +49,7 @@ public class SearchBot {
 	 */
 	public Move bestMove(Board board, Player player) {
 		List<Move> moves = board.possibleMovesFor(player);
-		if (playersSeparated(board)) {
+		if (separationCondition.checkSeparated(board)) {
 			TreeHeightSearch<Board> maxRounds = new TreeHeightSearch<>(separatedDepth, b -> nextBoardArray(b, player),
 					b -> estimator.roundsLeft(b, player));
 			int bestIndex = maxRounds.highestSubtree(board);
@@ -55,29 +57,6 @@ public class SearchBot {
 		}
 		double[] probabilities = minmax.optimalDecisionProbabilities(board, player);
 		return randomStrategy.chooseMove(moves, probabilities);
-	}
-
-	private boolean playersSeparated(Board board) {
-		boolean[][] visited = new boolean[board.width()][board.height()];
-		return playersSeparated(board, board.getX(Player.ZERO), board.getY(Player.ZERO), board.getX(Player.ONE),
-				board.getY(Player.ONE), visited);
-	}
-
-	private boolean playersSeparated(Board board, int x, int y, int targetX, int targetY, boolean[][] visited) {
-		if (!board.inBounds(x, y) || visited[x][y]) {
-			return false;
-		}
-		visited[x][y] = true;
-		if (x == targetX && y == targetY) {
-			return true;
-		}
-		if (board.isFilled(x, y)) {
-			return false;
-		}
-		return playersSeparated(board, x + 1, y, targetX, targetY, visited)
-				|| playersSeparated(board, x - 1, y, targetX, targetY, visited)
-				|| playersSeparated(board, x, y + 1, targetX, targetY, visited)
-				|| playersSeparated(board, x, y - 1, targetX, targetY, visited);
 	}
 
 	private List<Board> nextBoardArray(Board board, Player player) {
