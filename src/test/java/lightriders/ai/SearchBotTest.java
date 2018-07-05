@@ -1,5 +1,6 @@
 package lightriders.ai;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,12 @@ class SearchBotTest {
 
 	@Test
 	void testUseSeparatedStrategy() {
-		// TODO implement this.
+		Board board = Board.start(6, 2, 2, 0, 3, 0).makeMove(Move.DOWN, Player.ZERO).makeMove(Move.LEFT, Player.ZERO);
+		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), (b, p) -> {
+			throw new RuntimeException();
+		}, new TerminalStateEvaluator());
+		Move m = bot.bestMove(board, Player.ZERO);
+		assertTrue(m == Move.LEFT || m == Move.UP);
 	}
 
 }

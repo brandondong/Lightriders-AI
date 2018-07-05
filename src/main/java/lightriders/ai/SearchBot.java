@@ -9,7 +9,7 @@ import lightriders.game.Board;
 import lightriders.game.Move;
 import lightriders.random.IRandomStrategy;
 
-public class SearchBot {
+class SearchBot implements IBot {
 
 	private final int separatedDepth;
 
@@ -38,15 +38,7 @@ public class SearchBot {
 		minmax = new SimultaneousMinmax<Board>(depth, this::nextBoardsMatrix, evaluator::evaluateBoard);
 	}
 
-	/**
-	 * Computes the best move for the given board and player.
-	 * 
-	 * @param board
-	 *            The current board where the game is not over
-	 * @param player
-	 *            The player to choose for
-	 * @return The computed best move
-	 */
+	@Override
 	public Move bestMove(Board board, Player player) {
 		List<Move> moves = board.possibleMovesFor(player);
 		if (separationCondition.checkSeparated(board)) {
