@@ -2,8 +2,10 @@ package lightriders.simulation;
 
 import java.util.Scanner;
 
+import lightriders.ai.BotTestFactory;
 import lightriders.ai.Player;
 import lightriders.game.Board;
+import lightriders.random.DeterministicMajorityStrategy;
 
 class Main {
 
@@ -51,7 +53,7 @@ class Main {
 				human = Player.parseFromEngine(s.nextLine());
 			}
 
-			new HumanBotMatch(board, human).start();
+			new HumanBotMatch(BotTestFactory.bruteForce(new DeterministicMajorityStrategy()), board, human).start();
 		}
 	}
 

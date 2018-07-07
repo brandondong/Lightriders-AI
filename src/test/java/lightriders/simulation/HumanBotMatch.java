@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
 import lightriders.game.Move;
@@ -63,13 +64,18 @@ class HumanBotMatch {
 
 	private BotWorker worker;
 
+	private final IBot bot;
+
 	/**
+	 * @param bot
+	 *            The bot to play against
 	 * @param board
 	 *            The board to play
 	 * @param human
 	 *            The player that the human will control
 	 */
-	public HumanBotMatch(Board board, Player human) {
+	public HumanBotMatch(IBot bot, Board board, Player human) {
+		this.bot = bot;
 		currentBoard = board;
 		this.human = human;
 		// Keep track of the initially filled cells.
@@ -225,7 +231,7 @@ class HumanBotMatch {
 	}
 
 	private void startBackgroundBotWorker() {
-		worker = new BotWorker(currentBoard, human.opponent());
+		worker = new BotWorker(bot, currentBoard, human.opponent());
 		worker.execute();
 	}
 

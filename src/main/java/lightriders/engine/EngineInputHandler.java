@@ -1,5 +1,6 @@
 package lightriders.engine;
 
+import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
 import lightriders.game.Move;
@@ -14,9 +15,11 @@ class EngineInputHandler {
 
 	private Board currentBoard;
 
+	private final IBot bot = IBot.newCompetitionBot();
+
 	public Move action(String type, String time) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO consider passing time to factory bot method.
+		return bot.bestMove(currentBoard, botPlayer);
 	}
 
 	public void update(String player, String type, String value) {
