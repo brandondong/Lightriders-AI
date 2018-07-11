@@ -30,4 +30,16 @@ class PlayerSeparationConditionTest {
 		assertTrue(condition.checkSeparated(board));
 	}
 
+	@Test
+	void testPlayersNeighborsSeparated() {
+		Board board = Board.start(4, 2, 1, 0, 2, 0).makeMove(Move.DOWN, Player.ZERO).makeMove(Move.DOWN, Player.ONE);
+		assertTrue(condition.checkSeparated(board));
+	}
+
+	@Test
+	void testMultiplePaths() {
+		Board board = Board.start(4, 4, 0, 0, 3, 3);
+		assertFalse(condition.checkSeparated(board));
+	}
+
 }
