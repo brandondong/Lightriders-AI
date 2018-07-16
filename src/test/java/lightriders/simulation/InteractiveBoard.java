@@ -66,6 +66,15 @@ class InteractiveBoard {
 	/**
 	 * @param currentBoard
 	 *            The starting game board
+	 */
+	public InteractiveBoard(Board currentBoard) {
+		this(currentBoard, (x, y, b) -> {
+		});
+	}
+
+	/**
+	 * @param currentBoard
+	 *            The starting game board
 	 * @param mouseClickedCallback
 	 *            A handler for mouse click events on the board
 	 */

@@ -23,12 +23,16 @@ class SearchBot implements IBot {
 
 	/**
 	 * @param depth
-	 *            The depth to search to or 0 for no limit
+	 *            The depth to search to when not separated or 0 for no limit
+	 * @param separatedDepth
+	 *            The depth to search to when separated or 0 for no limit
 	 * @param randomStrategy
 	 *            A strategy for choosing moves based on calculated optimal
 	 *            probabilities
 	 * @param evaluator
 	 *            Board evaluation function
+	 * @param estimator
+	 *            Separated rounds left estimation function
 	 */
 	public SearchBot(int depth, int separatedDepth, IRandomStrategy randomStrategy, IEvaluator evaluator,
 			IRoundsEstimator estimator) {
