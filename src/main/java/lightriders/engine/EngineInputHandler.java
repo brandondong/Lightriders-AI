@@ -17,9 +17,11 @@ class EngineInputHandler {
 
 	private final IBot bot = IBot.newCompetitionBot();
 
+	private int timePerMove;
+
 	public Move action(String type, String time) {
-		// TODO consider passing time to factory bot method.
-		return bot.bestMove(currentBoard, botPlayer);
+		// TODO consider smarter time allocation calculations.
+		return bot.bestMove(currentBoard, botPlayer, timePerMove);
 	}
 
 	public void update(String player, String type, String value) {
@@ -41,6 +43,9 @@ class EngineInputHandler {
 			break;
 		case "your_botid":
 			botPlayer = Player.parseFromEngine(value);
+			break;
+		case "time_per_move":
+			timePerMove = Integer.parseInt(value);
 			break;
 		}
 

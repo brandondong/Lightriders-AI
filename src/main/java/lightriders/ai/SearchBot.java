@@ -43,7 +43,8 @@ class SearchBot implements IBot {
 	}
 
 	@Override
-	public Move bestMove(Board board, Player player) {
+	public Move bestMove(Board board, Player player, int time) {
+		// TODO iterative deepening.
 		List<Move> moves = board.possibleMovesFor(player);
 		if (separationCondition.checkSeparated(board)) {
 			TreeHeightSearch<Board> maxRounds = new TreeHeightSearch<>(separatedDepth, b -> nextBoardArray(b, player),

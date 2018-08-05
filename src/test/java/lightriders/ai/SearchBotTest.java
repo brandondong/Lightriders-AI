@@ -18,8 +18,8 @@ class SearchBotTest {
 	void testFirstMove4by4() {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
 		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
-		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ZERO));
-		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ONE));
+		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ZERO, Integer.MAX_VALUE));
+		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ONE, Integer.MAX_VALUE));
 	}
 
 	@Test
@@ -27,7 +27,7 @@ class SearchBotTest {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
 		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.RIGHT, Player.ONE);
-		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO));
+		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE));
 	}
 
 	@Test
@@ -35,7 +35,7 @@ class SearchBotTest {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
 		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.UP, Player.ONE);
-		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO));
+		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE));
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class SearchBotTest {
 		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), (b, p) -> {
 			throw new RuntimeException();
 		}, new TerminalStateEvaluator());
-		Move m = bot.bestMove(board, Player.ZERO);
+		Move m = bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE);
 		assertTrue(m == Move.LEFT || m == Move.UP);
 	}
 

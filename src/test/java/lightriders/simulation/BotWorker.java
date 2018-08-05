@@ -23,7 +23,7 @@ class BotWorker extends SwingWorker<Move, Void> {
 
 	@Override
 	protected Move doInBackground() {
-		return bot.bestMove(board, player);
+		return bot.bestMove(board, player, Integer.MAX_VALUE);
 	}
 
 }

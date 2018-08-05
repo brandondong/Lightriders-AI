@@ -31,7 +31,7 @@ class IdenticalBotMatch {
 	public void start() {
 		board.create();
 		while (!currentBoard.possibleMovesFor(Player.ZERO).isEmpty()) {
-			Move m0 = bot.bestMove(currentBoard, Player.ZERO);
+			Move m0 = bot.bestMove(currentBoard, Player.ZERO, Integer.MAX_VALUE);
 			Move m1;
 			if (m0 == Move.LEFT) {
 				m1 = Move.RIGHT;

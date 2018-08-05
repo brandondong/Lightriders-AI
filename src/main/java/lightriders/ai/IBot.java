@@ -14,9 +14,11 @@ public interface IBot {
 	 *            The current board where the game is not over
 	 * @param player
 	 *            The player to choose for
+	 * @param time
+	 *            Time to process move in milliseconds
 	 * @return The computed best move
 	 */
-	Move bestMove(Board board, Player player);
+	Move bestMove(Board board, Player player, int time);
 
 	/**
 	 * Creates a fully configured bot for competition use.
