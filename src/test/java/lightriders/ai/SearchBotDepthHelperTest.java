@@ -10,41 +10,43 @@ import lightriders.game.Board;
 import lightriders.game.Move;
 import lightriders.random.DeterministicMajorityStrategy;
 
-class SearchBotTest {
+class SearchBotDepthHelperTest {
 
 	private static final Board FOUR_BY_FOUR_START = Board.start(4, 4, 1, 1, 2, 1);
 
 	@Test
 	void testFirstMove4by4() {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
-		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
-		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ZERO, Integer.MAX_VALUE));
-		assertEquals(Move.DOWN, bot.bestMove(FOUR_BY_FOUR_START, Player.ONE, Integer.MAX_VALUE));
+		SearchBotDepthHelper bot = new SearchBotDepthHelper(0, new DeterministicMajorityStrategy(), terminal, terminal);
+		assertEquals(Move.DOWN, bot.bestMoveForDepth(FOUR_BY_FOUR_START, Player.ZERO, false,
+				FOUR_BY_FOUR_START.possibleMovesFor(Player.ZERO)));
+		assertEquals(Move.DOWN, bot.bestMoveForDepth(FOUR_BY_FOUR_START, Player.ONE, false,
+				FOUR_BY_FOUR_START.possibleMovesFor(Player.ZERO)));
 	}
 
 	@Test
 	void testResponseToBadMove4by4() {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
-		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
+		SearchBotDepthHelper bot = new SearchBotDepthHelper(0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.RIGHT, Player.ONE);
-		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE));
+		assertEquals(Move.LEFT, bot.bestMoveForDepth(board, Player.ZERO, false, board.possibleMovesFor(Player.ZERO)));
 	}
 
 	@Test
 	void testResponseToOtherBadMove4by4() {
 		TerminalStateEvaluator terminal = new TerminalStateEvaluator();
-		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), terminal, terminal);
+		SearchBotDepthHelper bot = new SearchBotDepthHelper(0, new DeterministicMajorityStrategy(), terminal, terminal);
 		Board board = FOUR_BY_FOUR_START.makeMove(Move.DOWN, Player.ZERO).makeMove(Move.UP, Player.ONE);
-		assertEquals(Move.LEFT, bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE));
+		assertEquals(Move.LEFT, bot.bestMoveForDepth(board, Player.ZERO, false, board.possibleMovesFor(Player.ZERO)));
 	}
 
 	@Test
 	void testUseSeparatedStrategy() {
 		Board board = Board.start(6, 2, 2, 0, 3, 0).makeMove(Move.DOWN, Player.ZERO).makeMove(Move.LEFT, Player.ZERO);
-		SearchBot bot = new SearchBot(0, 0, new DeterministicMajorityStrategy(), (b, p) -> {
+		SearchBotDepthHelper bot = new SearchBotDepthHelper(0, new DeterministicMajorityStrategy(), (b, p) -> {
 			throw new RuntimeException();
 		}, new TerminalStateEvaluator());
-		Move m = bot.bestMove(board, Player.ZERO, Integer.MAX_VALUE);
+		Move m = bot.bestMoveForDepth(board, Player.ZERO, true, board.possibleMovesFor(Player.ZERO));
 		assertTrue(m == Move.LEFT || m == Move.UP);
 	}
 

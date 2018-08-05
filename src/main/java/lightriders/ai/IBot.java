@@ -26,7 +26,7 @@ public interface IBot {
 	 * @return A new bot
 	 */
 	public static IBot newCompetitionBot() {
-		return new SearchBot(6, 12, new DeterministicMajorityStrategy(), null, new ChokePointRoundsEstimator());
+		return new SearchBot(new DeterministicMajorityStrategy(), null, new ChokePointRoundsEstimator());
 	}
 
 }

@@ -2,7 +2,7 @@ package lightriders.simulation;
 
 import java.util.Scanner;
 
-import lightriders.ai.BotTestFactory;
+import lightriders.ai.BruteForceBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
 import lightriders.random.DeterministicMajorityStrategy;
@@ -53,7 +53,7 @@ class Main {
 				human = Player.parseFromEngine(s.nextLine());
 			}
 
-			new HumanBotMatch(BotTestFactory.bruteForce(new DeterministicMajorityStrategy()), board, human).start();
+			new HumanBotMatch(new BruteForceBot(new DeterministicMajorityStrategy()), board, human).start();
 		}
 	}
 
