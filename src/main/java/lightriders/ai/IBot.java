@@ -26,6 +26,7 @@ public interface IBot {
 	 * @return A new bot
 	 */
 	public static IBot newCompetitionBot() {
+		// TODO evaluation function.
 		return new SearchBot(new DeterministicMajorityStrategy(), null, new ChokePointRoundsEstimator());
 	}
 

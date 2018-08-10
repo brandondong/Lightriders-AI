@@ -4,6 +4,17 @@ public enum Player {
 	ZERO, ONE;
 
 	/**
+	 * Parses the specified player from the engine input.
+	 * 
+	 * @param value
+	 *            The engine input
+	 * @return The matching player
+	 */
+	public static Player parseFromEngine(String value) {
+		return value.equals("0") ? ZERO : ONE;
+	}
+
+	/**
 	 * @return The opponent player.
 	 */
 	public Player opponent() {
@@ -14,16 +25,5 @@ public enum Player {
 			return ZERO;
 		}
 		throw new RuntimeException();
-	}
-
-	/**
-	 * Parses the specified player from the engine input.
-	 * 
-	 * @param value
-	 *            The engine input
-	 * @return The matching player
-	 */
-	public static Player parseFromEngine(String value) {
-		return value.equals("0") ? ZERO : ONE;
 	}
 }

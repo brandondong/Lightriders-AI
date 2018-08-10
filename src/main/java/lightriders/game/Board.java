@@ -26,6 +26,67 @@ public class Board {
 	}
 
 	/**
+	 * Constructs a new board with the two players at the given starting positions.
+	 * 
+	 * @param width
+	 *            The board width
+	 * @param height
+	 *            The board height
+	 * @param p0x
+	 *            Player 0's starting x position
+	 * @param p0y
+	 *            Player 0's staring y position
+	 * @param p1x
+	 *            Player 1's starting x position
+	 * @param p1y
+	 *            Player 1's starting y position
+	 * @return The new starting board
+	 */
+	public static Board start(int width, int height, int p0x, int p0y, int p1x, int p1y) {
+		boolean[][] isFilledGrid = new boolean[width][height];
+		isFilledGrid[p0x][p0y] = true;
+		isFilledGrid[p1x][p1y] = true;
+		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
+	}
+
+	/**
+	 * Constructs a new board from the engine input.
+	 * 
+	 * @param width
+	 *            The board width
+	 * @param height
+	 *            The board height
+	 * @param value
+	 *            Engine input
+	 * @return The corresponding board
+	 */
+	public static Board parseFromEngine(int width, int height, String value) {
+		boolean[][] isFilledGrid = new boolean[width][height];
+		String[] cells = value.split(",");
+		int p0x = -1;
+		int p0y = -1;
+		int p1x = -1;
+		int p1y = -1;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				int index = y * width + x;
+				String cell = cells[index];
+				if (cell.equals("0")) {
+					p0x = x;
+					p0y = y;
+				} else if (cell.equals("1")) {
+					p1x = x;
+					p1y = y;
+				}
+				if (!cell.equals(".")) {
+					isFilledGrid[x][y] = true;
+				}
+			}
+		}
+		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
+	}
+
+	/**
 	 * Determines the possible moves available for a specified player
 	 * 
 	 * @param player
@@ -166,67 +227,6 @@ public class Board {
 	@Override
 	public String toString() {
 		return null;
-	}
-
-	/**
-	 * Constructs a new board with the two players at the given starting positions.
-	 * 
-	 * @param width
-	 *            The board width
-	 * @param height
-	 *            The board height
-	 * @param p0x
-	 *            Player 0's starting x position
-	 * @param p0y
-	 *            Player 0's staring y position
-	 * @param p1x
-	 *            Player 1's starting x position
-	 * @param p1y
-	 *            Player 1's starting y position
-	 * @return The new starting board
-	 */
-	public static Board start(int width, int height, int p0x, int p0y, int p1x, int p1y) {
-		boolean[][] isFilledGrid = new boolean[width][height];
-		isFilledGrid[p0x][p0y] = true;
-		isFilledGrid[p1x][p1y] = true;
-		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
-	}
-
-	/**
-	 * Constructs a new board from the engine input.
-	 * 
-	 * @param width
-	 *            The board width
-	 * @param height
-	 *            The board height
-	 * @param value
-	 *            Engine input
-	 * @return The corresponding board
-	 */
-	public static Board parseFromEngine(int width, int height, String value) {
-		boolean[][] isFilledGrid = new boolean[width][height];
-		String[] cells = value.split(",");
-		int p0x = -1;
-		int p0y = -1;
-		int p1x = -1;
-		int p1y = -1;
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				int index = y * width + x;
-				String cell = cells[index];
-				if (cell.equals("0")) {
-					p0x = x;
-					p0y = y;
-				} else if (cell.equals("1")) {
-					p1x = x;
-					p1y = y;
-				}
-				if (!cell.equals(".")) {
-					isFilledGrid[x][y] = true;
-				}
-			}
-		}
-		return new Board(isFilledGrid, p0x, p0y, p1x, p1y);
 	}
 
 }
