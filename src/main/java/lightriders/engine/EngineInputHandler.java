@@ -7,7 +7,7 @@ import lightriders.game.Move;
 
 class EngineInputHandler {
 
-	private final IBot bot = IBot.newCompetitionBot();
+	private final IBot bot;
 
 	private final TimeAllocation allocator = new TimeAllocation();
 
@@ -24,25 +24,35 @@ class EngineInputHandler {
 	private int currentRound;
 
 	/**
+	 * @param bot
+	 *            The bot to decide moves with
+	 */
+	public EngineInputHandler(IBot bot) {
+		this.bot = bot;
+	}
+
+	/**
 	 * Decides a move to play for the bot player.
 	 * 
 	 * @param time
 	 *            Time the bot has to respond in milliseconds
 	 * @return The chosen move
 	 */
-	public Move action(String type, String time) {
+	public Move action(String time) {
 		int timeToRespond = Integer.parseInt(time);
 		return bot.bestMove(currentBoard, botPlayer,
 				allocator.allocateEvenly(currentRound, timeToRespond, timePerMove, width, height));
 	}
 
 	/**
+	 * Handles an update of the game state.
 	 * 
-	 * @param player
 	 * @param type
+	 *            Engine input type
 	 * @param value
+	 *            Engine input value
 	 */
-	public void update(String player, String type, String value) {
+	public void update(String type, String value) {
 		switch (type) {
 		case "field":
 			currentBoard = Board.parseFromEngine(width, height, value);
@@ -54,6 +64,14 @@ class EngineInputHandler {
 
 	}
 
+	/**
+	 * Handles a game setting.
+	 * 
+	 * @param type
+	 *            Engine input type
+	 * @param value
+	 *            Engine input value
+	 */
 	public void settings(String type, String value) {
 		switch (type) {
 		case "field_width":

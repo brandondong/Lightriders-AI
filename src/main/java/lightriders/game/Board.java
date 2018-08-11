@@ -1,6 +1,7 @@
 package lightriders.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lightriders.ai.Player;
@@ -226,7 +227,56 @@ public class Board {
 	 */
 	@Override
 	public String toString() {
-		return null;
+		StringBuilder s = new StringBuilder();
+		for (int y = 0; y < height(); y++) {
+			for (int x = 0; x < width(); x++) {
+				if (x == p0x && y == p0y) {
+					s.append('0');
+				} else if (x == p1x && y == p1y) {
+					s.append('1');
+				} else if (isFilled(x, y)) {
+					s.append('x');
+				} else {
+					s.append('.');
+				}
+				s.append(',');
+			}
+		}
+		return s.substring(0, s.length() - 1).toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Board other = (Board) obj;
+		if (!Arrays.deepEquals(isFilledGrid, other.isFilledGrid))
+			return false;
+		if (p0x != other.p0x)
+			return false;
+		if (p0y != other.p0y)
+			return false;
+		if (p1x != other.p1x)
+			return false;
+		if (p1y != other.p1y)
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.deepHashCode(isFilledGrid);
+		result = prime * result + p0x;
+		result = prime * result + p0y;
+		result = prime * result + p1x;
+		result = prime * result + p1y;
+		return result;
 	}
 
 }
