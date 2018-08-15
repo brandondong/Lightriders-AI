@@ -29,6 +29,8 @@ class InteractiveBoard {
 
 	private static final Color PINK = new Color(228, 25, 249);
 
+	private static final Color PROCESSING_TEXT_COLOR = new Color(180, 188, 219);
+
 	private static final int STROKE_WIDTH = 4;
 
 	private static final int CELL_SIZE = 33;
@@ -62,6 +64,10 @@ class InteractiveBoard {
 	private final IBoardMouseListener mouseClickedCallback;
 
 	private JLabel background;
+
+	private String processingText;
+
+	private boolean isProcessingState = false;
 
 	/**
 	 * @param currentBoard
@@ -126,6 +132,14 @@ class InteractiveBoard {
 				int p1y = currentBoard.getY(Player.ONE);
 				drawPlayerPath(g, upY, leftX, p0x, p0y, start0x, start0y, p0Moves, BLUE);
 				drawPlayerPath(g, upY, leftX, p1x, p1y, start1x, start1y, p1Moves, PINK);
+				drawProcessingText(g, upY, leftX);
+			}
+
+			private void drawProcessingText(Graphics g, int upY, int leftX) {
+				if (isProcessingState) {
+					g.setColor(PROCESSING_TEXT_COLOR);
+					g.drawString(processingText, leftX, upY - CELL_SIZE / 2);
+				}
 			}
 
 			private void drawPlayerPath(Graphics g, int upY, int leftX, int pX, int pY, int startX, int startY,
@@ -182,6 +196,9 @@ class InteractiveBoard {
 		background.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (isProcessingState) {
+					return;
+				}
 				int clickX = e.getX();
 				int clickY = e.getY();
 				int upY = getGridTopY(background);
@@ -206,7 +223,7 @@ class InteractiveBoard {
 
 	/**
 	 * Makes the specified moves for each player, re-rendering the board and
-	 * discarding any processing images.
+	 * discarding any processing state.
 	 * <p>
 	 * The moves must be valid for each player
 	 * 
@@ -219,17 +236,24 @@ class InteractiveBoard {
 		currentBoard = currentBoard.makeMove(p0Move, Player.ZERO).makeMove(p1Move, Player.ONE);
 		p0Moves.add(p0Move);
 		p1Moves.add(p1Move);
+		isProcessingState = false;
 		if (background != null) {
 			background.repaint();
-			// TODO hide processing image.
 		}
 	}
 
 	/**
-	 * Displays a processing image overlaying the board.
+	 * Sets the board to a processing state until moves are chosen.
+	 * 
+	 * @param processingText
+	 *            The processing message to overlay
 	 */
-	public void showProcessingImage() {
-		// TODO Auto-generated method stub
+	public void setProcessingState(String processingText) {
+		this.processingText = processingText;
+		isProcessingState = true;
+		if (background != null) {
+			background.repaint();
+		}
 
 	}
 

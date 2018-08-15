@@ -55,9 +55,9 @@ class HumanBotMatch {
 		if (!currentBoard.possibleMovesFor(human).contains(m)) {
 			return;
 		}
-		interactiveBoard.showProcessingImage();
+		interactiveBoard.setProcessingState("Loading Opponent Move...");
 		try {
-			// Block for bot move. Hopefully already processed.
+			// TODO No blocking in the EDT.
 			Move botMove = worker.get();
 			currentBoard = currentBoard.makeMove(m, human).makeMove(botMove, human.opponent());
 			if (human == Player.ZERO) {
