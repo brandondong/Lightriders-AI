@@ -1,5 +1,7 @@
 package lightriders.simulation;
 
+import javax.swing.SwingUtilities;
+
 import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
@@ -55,17 +57,33 @@ class HumanBotMatch {
 		if (!currentBoard.possibleMovesFor(human).contains(m)) {
 			return;
 		}
-		interactiveBoard.setProcessingState("Loading Opponent Move...");
+		if (worker.isDone()) {
+			Move botMove = blockForWorkerMove();
+			makeMoves(currentBoard, m, botMove);
+		} else {
+			interactiveBoard.setProcessingState("Loading Opponent Move...");
+			new Thread(() -> {
+				Move botMove = blockForWorkerMove();
+				SwingUtilities.invokeLater(() -> {
+					makeMoves(currentBoard, m, botMove);
+				});
+			}).start();
+		}
+	}
+
+	private void makeMoves(Board currentBoard, Move m, Move botMove) {
+		Board nextBoard = currentBoard.makeMove(m, human).makeMove(botMove, human.opponent());
+		if (human == Player.ZERO) {
+			interactiveBoard.makeMoves(m, botMove);
+		} else {
+			interactiveBoard.makeMoves(botMove, m);
+		}
+		startBackgroundBotWorker(nextBoard);
+	}
+
+	private Move blockForWorkerMove() {
 		try {
-			// TODO No blocking in the EDT.
-			Move botMove = worker.get();
-			currentBoard = currentBoard.makeMove(m, human).makeMove(botMove, human.opponent());
-			if (human == Player.ZERO) {
-				interactiveBoard.makeMoves(m, botMove);
-			} else {
-				interactiveBoard.makeMoves(botMove, m);
-			}
-			startBackgroundBotWorker(currentBoard);
+			return worker.get();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
