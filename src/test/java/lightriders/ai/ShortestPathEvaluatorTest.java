@@ -44,4 +44,10 @@ class ShortestPathEvaluatorTest {
 		assertEquals(-4, evaluator.evaluateBoard(board, Player.ZERO), TOL);
 	}
 
+	@Test
+	void testGameOver() {
+		Board board = Board.start(3, 1, 1, 0, 2, 0);
+		assertEquals(1, evaluator.evaluateBoard(board, Player.ZERO), TOL);
+	}
+
 }

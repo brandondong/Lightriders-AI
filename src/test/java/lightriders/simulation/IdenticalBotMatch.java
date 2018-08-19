@@ -17,7 +17,8 @@ class IdenticalBotMatch {
 	 * @param bot
 	 *            The bot to play against itself
 	 * @param board
-	 *            A valid starting board to play
+	 *            A valid starting board to play, assumed that the bots start on
+	 *            symmetrical left and right sides of the board
 	 */
 	public IdenticalBotMatch(IBot bot, Board currentBoard) {
 		this.bot = bot;
@@ -32,16 +33,18 @@ class IdenticalBotMatch {
 		board.create();
 		while (!currentBoard.possibleMovesFor(Player.ZERO).isEmpty()) {
 			Move m0 = bot.bestMove(currentBoard, Player.ZERO, Integer.MAX_VALUE);
-			Move m1;
-			if (m0 == Move.LEFT) {
-				m1 = Move.RIGHT;
-			} else if (m0 == Move.RIGHT) {
-				m1 = Move.LEFT;
-			} else {
-				m1 = m0;
-			}
+			Move m1 = mirrorMove(m0);
 			board.makeMoves(m0, m1);
 			currentBoard = currentBoard.makeMove(m0, Player.ZERO).makeMove(m1, Player.ONE);
 		}
+	}
+
+	private Move mirrorMove(Move m) {
+		if (m == Move.LEFT) {
+			return Move.RIGHT;
+		} else if (m == Move.RIGHT) {
+			return Move.LEFT;
+		}
+		return m;
 	}
 }

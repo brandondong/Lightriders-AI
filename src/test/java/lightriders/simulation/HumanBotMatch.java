@@ -1,5 +1,7 @@
 package lightriders.simulation;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.swing.SwingUtilities;
 
 import lightriders.ai.IBot;
@@ -62,12 +64,12 @@ class HumanBotMatch {
 			makeMoves(currentBoard, m, botMove);
 		} else {
 			interactiveBoard.setProcessingState("Loading Opponent Move...");
-			new Thread(() -> {
+			CompletableFuture.runAsync(() -> {
 				Move botMove = blockForWorkerMove();
 				SwingUtilities.invokeLater(() -> {
 					makeMoves(currentBoard, m, botMove);
 				});
-			}).start();
+			});
 		}
 	}
 
