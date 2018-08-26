@@ -37,7 +37,12 @@ class SearchBot implements IBot {
 	@Override
 	public Move bestMove(Board board, Player player, int time) {
 		List<Move> moves = board.possibleMovesFor(player);
+		if (moves.size() == 1) {
+			// Early check for possible time saving for future moves.
+			return moves.get(0);
+		}
 		boolean separated = separationCondition.checkSeparated(board);
+		// TODO test timing.
 		long nanoStart = System.nanoTime();
 		// Use iterative deepening to search to the appropriate depth for the time
 		// limit.
