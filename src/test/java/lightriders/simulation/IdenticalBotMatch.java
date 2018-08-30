@@ -7,30 +7,31 @@ import lightriders.game.Move;
 
 class IdenticalBotMatch {
 
-	private final InteractiveBoard board;
-
 	private final IBot bot;
 
 	private Board currentBoard;
 
+	private IdenticalBotMatch(IBot bot, Board currentBoard) {
+		this.bot = bot;
+		this.currentBoard = currentBoard;
+	}
+
 	/**
+	 * Starts a new instance of the bot match.
+	 * 
 	 * @param bot
 	 *            The bot to play against itself
 	 * @param board
 	 *            A valid starting board to play, assumed that the bots start on
 	 *            symmetrical left and right sides of the board
 	 */
-	public IdenticalBotMatch(IBot bot, Board currentBoard) {
-		this.bot = bot;
-		this.currentBoard = currentBoard;
-		board = new InteractiveBoard(currentBoard);
+	public static void start(IBot bot, Board currentBoard) {
+		IdenticalBotMatch match = new IdenticalBotMatch(bot, currentBoard);
+		match.start();
 	}
 
-	/**
-	 * Starts a new instance of the bot match.
-	 */
-	public void start() {
-		board.create();
+	private void start() {
+		InteractiveBoard board = InteractiveBoard.start(currentBoard);
 		while (!currentBoard.possibleMovesFor(Player.ZERO).isEmpty()) {
 			Move m0 = bot.bestMove(currentBoard, Player.ZERO, Integer.MAX_VALUE);
 			Move m1 = mirrorMove(m0);

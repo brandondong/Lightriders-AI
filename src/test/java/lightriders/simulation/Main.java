@@ -40,7 +40,7 @@ class Main {
 			System.out.print("Enter bot starting y: ");
 			int p1y = s.nextInt();
 			Board board = Board.start(width, height, p0x, p0y, p1x, p1y);
-			new HumanBotMatch(bot, board, Player.ZERO).start();
+			HumanBotMatch.start(bot, board, Player.ZERO);
 		} else {
 			System.out.print("Enter bot starting x: ");
 			int p0x = s.nextInt();
@@ -49,7 +49,7 @@ class Main {
 			int p1x = width - 1 - p0x;
 			int p1y = p0y;
 			Board board = Board.start(width, height, p0x, p0y, p1x, p1y);
-			new IdenticalBotMatch(bot, board).start();
+			IdenticalBotMatch.start(bot, board);
 		}
 	}
 
@@ -63,7 +63,7 @@ class Main {
 		Board board = Board.parseFromEngine(width, height, value);
 		System.out.print("Enter human player id (0/1)");
 		Player human = Player.parseFromEngine(s.nextLine());
-		new HumanBotMatch(bot, board, human).start();
+		HumanBotMatch.start(bot, board, human);
 	}
 
 }

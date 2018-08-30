@@ -17,9 +17,20 @@ class HumanBotMatch {
 
 	private final IBot bot;
 
-	private final InteractiveBoard interactiveBoard;
+	private InteractiveBoard interactiveBoard;
+
+	private final Board startingBoard;
+
+	private HumanBotMatch(IBot bot, Board board, Player human) {
+		this.bot = bot;
+		this.human = human;
+		startingBoard = board;
+		startBackgroundBotWorker(board);
+	}
 
 	/**
+	 * Starts a new instance of the interactive match.
+	 * 
 	 * @param bot
 	 *            The bot to play against
 	 * @param board
@@ -27,18 +38,13 @@ class HumanBotMatch {
 	 * @param human
 	 *            The player that the human will control
 	 */
-	public HumanBotMatch(IBot bot, Board board, Player human) {
-		this.bot = bot;
-		this.human = human;
-		interactiveBoard = new InteractiveBoard(board, this::handleMouseClick);
-		startBackgroundBotWorker(board);
+	public static void start(IBot bot, Board board, Player human) {
+		HumanBotMatch match = new HumanBotMatch(bot, board, human);
+		match.start();
 	}
 
-	/**
-	 * Starts a new instance of the interactive match.
-	 */
-	public void start() {
-		interactiveBoard.create();
+	private void start() {
+		interactiveBoard = InteractiveBoard.start(startingBoard, this::handleMouseClick);
 	}
 
 	private void handleMouseClick(int x, int y, Board currentBoard) {

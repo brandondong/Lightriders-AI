@@ -69,22 +69,7 @@ class InteractiveBoard {
 
 	private boolean isProcessingState = false;
 
-	/**
-	 * @param currentBoard
-	 *            The starting game board
-	 */
-	public InteractiveBoard(Board currentBoard) {
-		this(currentBoard, (x, y, b) -> {
-		});
-	}
-
-	/**
-	 * @param currentBoard
-	 *            The starting game board
-	 * @param mouseClickedCallback
-	 *            A handler for mouse click events on the board
-	 */
-	public InteractiveBoard(Board currentBoard, IBoardMouseListener mouseClickedCallback) {
+	private InteractiveBoard(Board currentBoard, IBoardMouseListener mouseClickedCallback) {
 		this.currentBoard = currentBoard;
 		this.mouseClickedCallback = mouseClickedCallback;
 		start0x = currentBoard.getX(Player.ZERO);
@@ -102,8 +87,66 @@ class InteractiveBoard {
 
 	/**
 	 * Starts a new window with an interactive board.
+	 * 
+	 * @param currentBoard
+	 *            The starting game board
+	 * @return The created board
 	 */
-	public void create() {
+	public static InteractiveBoard start(Board currentBoard) {
+		InteractiveBoard board = new InteractiveBoard(currentBoard, (x, y, b) -> {
+		});
+		board.create();
+		return board;
+	}
+
+	/**
+	 * Starts a new window with an interactive board.
+	 * 
+	 * @param currentBoard
+	 *            The starting game board
+	 * @param mouseClickedCallback
+	 *            A handler for mouse click events on the board
+	 * @return The created board
+	 */
+	public static InteractiveBoard start(Board currentBoard, IBoardMouseListener mouseClickedCallback) {
+		InteractiveBoard board = new InteractiveBoard(currentBoard, mouseClickedCallback);
+		board.create();
+		return board;
+	}
+
+	/**
+	 * Makes the specified moves for each player, re-rendering the board and
+	 * discarding any processing state.
+	 * <p>
+	 * The moves must be valid for each player
+	 * 
+	 * @param p0Move
+	 *            Player 0's move
+	 * @param p1Move
+	 *            Player 1's move
+	 */
+	public void makeMoves(Move p0Move, Move p1Move) {
+		currentBoard = currentBoard.makeMove(p0Move, Player.ZERO).makeMove(p1Move, Player.ONE);
+		p0Moves.add(p0Move);
+		p1Moves.add(p1Move);
+		isProcessingState = false;
+		background.repaint();
+	}
+
+	/**
+	 * Sets the board to a processing state until moves are chosen.
+	 * 
+	 * @param processingText
+	 *            The processing message to overlay
+	 */
+	public void setProcessingState(String processingText) {
+		this.processingText = processingText;
+		isProcessingState = true;
+		background.repaint();
+
+	}
+
+	private void create() {
 		JFrame frame = new JFrame("Light Riders");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
@@ -218,43 +261,6 @@ class InteractiveBoard {
 		// Size the frame and show it.
 		frame.pack();
 		frame.setVisible(true);
-
-	}
-
-	/**
-	 * Makes the specified moves for each player, re-rendering the board and
-	 * discarding any processing state.
-	 * <p>
-	 * The moves must be valid for each player
-	 * 
-	 * @param p0Move
-	 *            Player 0's move
-	 * @param p1Move
-	 *            Player 1's move
-	 */
-	public void makeMoves(Move p0Move, Move p1Move) {
-		currentBoard = currentBoard.makeMove(p0Move, Player.ZERO).makeMove(p1Move, Player.ONE);
-		p0Moves.add(p0Move);
-		p1Moves.add(p1Move);
-		isProcessingState = false;
-		if (background != null) {
-			background.repaint();
-		}
-	}
-
-	/**
-	 * Sets the board to a processing state until moves are chosen.
-	 * 
-	 * @param processingText
-	 *            The processing message to overlay
-	 */
-	public void setProcessingState(String processingText) {
-		this.processingText = processingText;
-		isProcessingState = true;
-		if (background != null) {
-			background.repaint();
-		}
-
 	}
 
 	private int getGridTopY(JComponent component) {
