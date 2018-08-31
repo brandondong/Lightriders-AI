@@ -11,6 +11,10 @@ import lightriders.random.IRandomStrategy;
 
 class SearchBot implements IBot {
 
+	private static final int SEPARATED_AVG_BRANCHING_FACTOR = 2;
+
+	private static final int NONSEPARATED_AVG_BRANCHING_FACTOR = 4;
+
 	private final IRandomStrategy randomStrategy;
 
 	private final IEvaluator evaluator;
@@ -42,7 +46,7 @@ class SearchBot implements IBot {
 			return moves.get(0);
 		}
 		boolean separated = separationCondition.checkSeparated(board);
-		// TODO test timing.
+		int timeCheck = timeCheckBeforeIteration(time, separated);
 		long nanoStart = System.nanoTime();
 		// Use iterative deepening to search to the appropriate depth for the time
 		// limit.
@@ -51,10 +55,18 @@ class SearchBot implements IBot {
 			Move m = helper.bestMoveForDepth(board, player, separated, moves);
 			long nanoCurrent = System.nanoTime();
 			long millisElapsed = TimeUnit.NANOSECONDS.toMillis(nanoCurrent - nanoStart);
-			if (millisElapsed >= time) {
+			if (millisElapsed > timeCheck) {
 				return m;
 			}
 		}
+	}
+
+	private int timeCheckBeforeIteration(int time, boolean separated) {
+		// Assume time spent before last searched depth was negligible.
+		if (separated) {
+			return time / (SEPARATED_AVG_BRANCHING_FACTOR + 1);
+		}
+		return time / (NONSEPARATED_AVG_BRANCHING_FACTOR + 1);
 	}
 
 }
