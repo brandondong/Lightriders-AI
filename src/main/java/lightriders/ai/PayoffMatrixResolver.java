@@ -67,8 +67,14 @@ class PayoffMatrixResolver<T> {
 		boolean[][] hasBeenEvaluated = new boolean[numRows][numColumns];
 
 		double[][] payoffMatrix = new double[numRows][numColumns];
-		for (int i = 0; i < numRows * numColumns; i++) {
-			// Search for a good candidate to evaluate.
+
+		fillFirstRowOrColumn(positions, positionEvaluator, numRows, numColumns, leastInRow, maxInColumn, numEmptyInRow,
+				numEmptyInColumn, hasBeenEvaluated, payoffMatrix);
+
+		int cellsLeft = numRows * numColumns - Math.max(numRows, numColumns);
+		for (int i = 0; i < cellsLeft; i++) {
+			// Search for a good candidate to evaluate by greedily considering how close to
+			// equilibrium confirmation.
 			int bestRow = -1;
 			int bestColumn = -1;
 			int lowestEmpty = Integer.MAX_VALUE;
@@ -121,14 +127,41 @@ class PayoffMatrixResolver<T> {
 					}
 				}
 			}
-			payoffMatrix[bestRow][bestColumn] = positionEvaluator.apply(positions[bestRow][bestColumn]);
-			hasBeenEvaluated[bestRow][bestColumn] = true;
-			numEmptyInRow[bestRow]--;
-			numEmptyInColumn[bestColumn]--;
-			leastInRow[bestRow] = Math.min(leastInRow[bestRow], payoffMatrix[bestRow][bestColumn]);
-			maxInColumn[bestColumn] = Math.max(maxInColumn[bestColumn], payoffMatrix[bestRow][bestColumn]);
+			evaluateCell(bestRow, bestColumn, positions, positionEvaluator, leastInRow, maxInColumn, numEmptyInRow,
+					numEmptyInColumn, hasBeenEvaluated, payoffMatrix);
 		}
+		// No pruning possible.
 		return matrixReduction.reduce(payoffMatrix);
+	}
+
+	private void evaluateCell(int bestRow, int bestColumn, T[][] positions, Function<T, Double> positionEvaluator,
+			double[] leastInRow, double[] maxInColumn, int[] numEmptyInRow, int[] numEmptyInColumn,
+			boolean[][] hasBeenEvaluated, double[][] payoffMatrix) {
+		payoffMatrix[bestRow][bestColumn] = positionEvaluator.apply(positions[bestRow][bestColumn]);
+		hasBeenEvaluated[bestRow][bestColumn] = true;
+		numEmptyInRow[bestRow]--;
+		numEmptyInColumn[bestColumn]--;
+		leastInRow[bestRow] = Math.min(leastInRow[bestRow], payoffMatrix[bestRow][bestColumn]);
+		maxInColumn[bestColumn] = Math.max(maxInColumn[bestColumn], payoffMatrix[bestRow][bestColumn]);
+	}
+
+	private void fillFirstRowOrColumn(T[][] positions, Function<T, Double> positionEvaluator, int numRows,
+			int numColumns, double[] leastInRow, double[] maxInColumn, int[] numEmptyInRow, int[] numEmptyInColumn,
+			boolean[][] hasBeenEvaluated, double[][] payoffMatrix) {
+		// Fill the first row or column depending on which one is longer.
+		if (numRows > numColumns) {
+			// Evaluate first column.
+			for (int i = 0; i < numRows; i++) {
+				evaluateCell(i, 0, positions, positionEvaluator, leastInRow, maxInColumn, numEmptyInRow,
+						numEmptyInColumn, hasBeenEvaluated, payoffMatrix);
+			}
+		} else {
+			// Evaluate first row.
+			for (int i = 0; i < numColumns; i++) {
+				evaluateCell(0, i, positions, positionEvaluator, leastInRow, maxInColumn, numEmptyInRow,
+						numEmptyInColumn, hasBeenEvaluated, payoffMatrix);
+			}
+		}
 	}
 
 }
