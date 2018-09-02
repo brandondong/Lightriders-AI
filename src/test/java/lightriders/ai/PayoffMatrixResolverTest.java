@@ -1,5 +1,6 @@
 package lightriders.ai;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.function.Function;
@@ -48,6 +49,7 @@ class PayoffMatrixResolverTest {
 		Double[][] matrix = new Double[][] { new Double[] { 1., -1., -2. }, new Double[] { -1., 1., -3. } };
 		assertEquals(-2, resolver.findNashEquilibriumValue(matrix, countResolved), TOL);
 		assertEquals(4, countResolved.numResolved());
+		assertArrayEquals(new double[] { 1, 0 }, resolver.findNashEquilibriumStrategy(matrix, countResolved), TOL);
 	}
 
 }

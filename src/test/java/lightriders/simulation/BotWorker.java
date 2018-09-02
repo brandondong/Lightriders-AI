@@ -2,6 +2,7 @@ package lightriders.simulation;
 
 import javax.swing.SwingWorker;
 
+import lightriders.ai.BotTestFactory;
 import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
@@ -23,7 +24,7 @@ class BotWorker extends SwingWorker<Move, Void> {
 
 	@Override
 	protected Move doInBackground() {
-		return bot.bestMove(board, player, Integer.MAX_VALUE);
+		return bot.bestMove(board, player, BotTestFactory.TESTING_MOVE_TIME);
 	}
 
 }

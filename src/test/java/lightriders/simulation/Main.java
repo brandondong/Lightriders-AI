@@ -2,17 +2,16 @@ package lightriders.simulation;
 
 import java.util.Scanner;
 
-import lightriders.ai.BruteForceBot;
+import lightriders.ai.BotTestFactory;
 import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
-import lightriders.random.DeterministicMajorityStrategy;
 
 class Main {
 
 	public static void main(String[] args) {
-		IBot bot = new BruteForceBot(new DeterministicMajorityStrategy());
 		try (Scanner s = new Scanner(System.in)) {
+			IBot bot = constructBotFromInput(s);
 			System.out.print("New game/load existing game? (1/2): ");
 			boolean newGame = s.nextInt() == 1;
 			if (newGame) {
@@ -21,6 +20,14 @@ class Main {
 				existingGame(bot, s);
 			}
 		}
+	}
+
+	private static IBot constructBotFromInput(Scanner s) {
+		System.out.print("Competition/brute force bot? (1/2): ");
+		if (s.nextInt() == 1) {
+			return IBot.newCompetitionBot();
+		}
+		return BotTestFactory.newBruteForceBot();
 	}
 
 	private static void newGame(IBot bot, Scanner s) {

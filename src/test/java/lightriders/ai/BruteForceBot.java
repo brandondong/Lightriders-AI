@@ -5,7 +5,7 @@ import lightriders.game.Board;
 import lightriders.game.Move;
 import lightriders.random.IRandomStrategy;
 
-public class BruteForceBot implements IBot {
+class BruteForceBot implements IBot {
 
 	private final SearchBotDepthHelper helper;
 

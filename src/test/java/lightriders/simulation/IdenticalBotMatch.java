@@ -1,5 +1,6 @@
 package lightriders.simulation;
 
+import lightriders.ai.BotTestFactory;
 import lightriders.ai.IBot;
 import lightriders.ai.Player;
 import lightriders.game.Board;
@@ -33,7 +34,7 @@ class IdenticalBotMatch {
 	private void start() {
 		InteractiveBoard board = InteractiveBoard.start(currentBoard);
 		while (!currentBoard.possibleMovesFor(Player.ZERO).isEmpty()) {
-			Move m0 = bot.bestMove(currentBoard, Player.ZERO, Integer.MAX_VALUE);
+			Move m0 = bot.bestMove(currentBoard, Player.ZERO, BotTestFactory.TESTING_MOVE_TIME);
 			Move m1 = mirrorMove(m0);
 			board.makeMoves(m0, m1);
 			currentBoard = currentBoard.makeMove(m0, Player.ZERO).makeMove(m1, Player.ONE);
