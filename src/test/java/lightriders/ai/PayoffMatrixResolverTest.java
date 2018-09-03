@@ -42,6 +42,9 @@ class PayoffMatrixResolverTest {
 		Double[][] matchingPennies = new Double[][] { new Double[] { 1., -1. }, new Double[] { -1., 1. } };
 		assertEquals(0, resolver.findNashEquilibriumValue(matchingPennies, countResolved), TOL);
 		assertEquals(4, countResolved.numResolved());
+		assertArrayEquals(new double[] { 0.5, 0.5 },
+				resolver.findNashEquilibriumStrategy(matchingPennies, countResolved), TOL);
+		assertEquals(8, countResolved.numResolved());
 	}
 
 	@Test
@@ -50,6 +53,7 @@ class PayoffMatrixResolverTest {
 		assertEquals(-2, resolver.findNashEquilibriumValue(matrix, countResolved), TOL);
 		assertEquals(4, countResolved.numResolved());
 		assertArrayEquals(new double[] { 1, 0 }, resolver.findNashEquilibriumStrategy(matrix, countResolved), TOL);
+		assertEquals(8, countResolved.numResolved());
 	}
 
 }
