@@ -42,10 +42,8 @@ class Main {
 			int p0x = s.nextInt();
 			System.out.print("Enter human starting y: ");
 			int p0y = s.nextInt();
-			System.out.print("Enter bot starting x: ");
-			int p1x = s.nextInt();
-			System.out.print("Enter bot starting y: ");
-			int p1y = s.nextInt();
+			int p1x = width - 1 - p0x;
+			int p1y = p0y;
 			Board board = Board.start(width, height, p0x, p0y, p1x, p1y);
 			HumanBotMatch.start(bot, board, Player.ZERO);
 		} else {
